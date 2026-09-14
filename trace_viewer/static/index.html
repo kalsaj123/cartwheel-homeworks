@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cartwheel Trace Viewer</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Cartwheel Trace Viewer</h1>
+    <span id="trace-count" class="muted"></span>
+    <button id="refresh-btn">Refresh</button>
+  </header>
+  <div id="layout">
+    <aside id="trace-list"><p class="muted">Loading traces&hellip;</p></aside>
+    <main id="trace-detail">
+      <p class="empty-state">Select a trace on the left to inspect it.</p>
+    </main>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
