@@ -269,15 +269,21 @@ def find_order(ctx: AuthContext, query: str) -> dict[str, Any]:
     Takes a natural-language query (e.g., "earmuffs I bought last week")
     and searches the authenticated user's orders for products whose name
     matches. Use fuzzy string matching (e.g., thefuzz.fuzz.partial_ratio
-    or SQLite LIKE) to find orders whose product name is close to the
+    or case-insensitive substring matching) to find orders whose product name is close to the
     query.
 
     Access rules: a shopper searches only the shopper's own orders, a
     merchant searches orders from the merchant's store, and support staff
-    can search any orders. Use agent.db.list_orders_for_user for shoppers
-    and agent.db.list_orders_for_store for merchants. For support staff,
-    use agent.db.list_orders_for_user with no user filter, or search
-    across all orders.
+    can search any orders. Use agent.db.list_order_search_candidates with
+    user_id=ctx.user_id for shoppers, store_id=ctx.store_id for merchants,
+    or all_orders=True only for support. Derive the scope from ctx, never
+    from the query; reject unsupported roles or missing required identity.
+    Use agent.db.list_products to map product IDs to product titles.
+
+    The helper returns the complete authorised scope, newest first with
+    order ID descending as the tie-breaker. Match product names first,
+    preserve that order, then return at most five matches. Do not search
+    only the 20 most recent orders. Convert matches with to_public_dict().
 
     Args:
         ctx: The caller's auth context.
@@ -290,22 +296,23 @@ def find_order(ctx: AuthContext, query: str) -> dict[str, Any]:
     """
     with db.connection() as conn:
         if ctx.role == "shopper":
-            orders = db.list_orders_for_user(conn, ctx.user_id, limit=DEFAULT_ORDER_LIMIT)
+            candidates = db.list_order_search_candidates(conn, user_id=ctx.user_id)
         elif ctx.role == "merchant":
-            orders = db.list_orders_for_store(conn, ctx.store_id, limit=DEFAULT_ORDER_LIMIT)
-        else:  # support: search across all orders
-            rows = conn.execute(
-                "SELECT * FROM orders ORDER BY ordered_at DESC, id DESC"
-            ).fetchall()
-            orders = [db._order_from_row(row) for row in rows]
+            candidates = db.list_order_search_candidates(conn, store_id=ctx.store_id)
+        elif ctx.role == "support":
+            candidates = db.list_order_search_candidates(conn, all_orders=True)
+        else:
+            raise ValueError(f"unsupported role for find_order: {ctx.role}")
         product_titles = {p.id: p.title for p in db.list_products(conn)}
 
-    scored = [
-        (fuzz.partial_ratio(query.lower(), product_titles.get(o.product_id, "").lower()), o)
-        for o in orders
+    # Preserve the helper's newest-first order; match product names first,
+    # then truncate, rather than re-sorting by fuzzy-match score.
+    matches = [
+        o
+        for o in candidates
+        if fuzz.partial_ratio(query.lower(), product_titles.get(o.product_id, "").lower())
+        >= FIND_ORDER_MATCH_THRESHOLD
     ]
-    scored.sort(key=lambda pair: (-pair[0], -pair[1].id))
-    matches = [o for score, o in scored if score >= FIND_ORDER_MATCH_THRESHOLD]
     matches = matches[:FIND_ORDER_MAX_RESULTS]
 
     return {"ok": True, "orders": [o.to_public_dict() for o in matches]}
