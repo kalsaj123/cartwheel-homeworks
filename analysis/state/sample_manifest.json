@@ -1,0 +1,627 @@
+[
+  {
+    "scenario_id": "pilot-0049",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0234::run2",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0154",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "pilot-0015",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0189::run2",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "pilot-0037",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0224::run2",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0244::run2",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0140",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0231::run2",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0117",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0173::run2",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0126",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0094",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0086",
+    "reason": "random pick",
+    "batch": "batch1_uniform"
+  },
+  {
+    "scenario_id": "support-0210::run2",
+    "reason": "cluster 0 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0243::run2",
+    "reason": "cluster 1 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0038",
+    "reason": "cluster 2 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0074",
+    "reason": "cluster 3 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0239::run2",
+    "reason": "cluster 4 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "pilot-0005",
+    "reason": "cluster 5 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0186::run2",
+    "reason": "cluster 6 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "pilot-0017",
+    "reason": "cluster 0 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0024",
+    "reason": "cluster 1 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0044",
+    "reason": "cluster 2 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0144",
+    "reason": "cluster 3 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0219::run2",
+    "reason": "cluster 4 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0207::run2",
+    "reason": "cluster 5 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0138",
+    "reason": "cluster 6 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0208::run2",
+    "reason": "cluster 0 representative",
+    "batch": "batch1_cluster"
+  },
+  {
+    "scenario_id": "support-0170::run2",
+    "reason": "stratified by intent=cancel_order",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0177::run2",
+    "reason": "stratified by intent=cancel_order",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0175::run2",
+    "reason": "stratified by intent=cancel_order",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0182::run2",
+    "reason": "stratified by intent=cancel_order",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0048",
+    "reason": "stratified by intent=dispute_or_escalation",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "pilot-0003",
+    "reason": "stratified by intent=dispute_or_escalation",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0242::run2",
+    "reason": "stratified by intent=dispute_or_escalation",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0236::run2",
+    "reason": "stratified by intent=dispute_or_escalation",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0087",
+    "reason": "stratified by intent=order_status",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0082",
+    "reason": "stratified by intent=order_status",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0107",
+    "reason": "stratified by intent=order_status",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0013",
+    "reason": "stratified by intent=order_status",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0249::run2",
+    "reason": "stratified by intent=out_of_scope_request",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0250::run2",
+    "reason": "stratified by intent=out_of_scope_request",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0061",
+    "reason": "stratified by intent=out_of_scope_request",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "pilot-0011",
+    "reason": "stratified by intent=out_of_scope_request",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0217::run2",
+    "reason": "stratified by intent=policy_question",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0216::run2",
+    "reason": "stratified by intent=policy_question",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0222::run2",
+    "reason": "stratified by intent=policy_question",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0233::run2",
+    "reason": "stratified by intent=policy_question",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0196::run2",
+    "reason": "stratified by intent=product_search",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "pilot-0016",
+    "reason": "stratified by intent=product_search",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0021",
+    "reason": "stratified by intent=product_search",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0213::run2",
+    "reason": "stratified by intent=product_search",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0052",
+    "reason": "stratified by intent=refund_request",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0167::run2",
+    "reason": "stratified by intent=refund_request",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0165::run2",
+    "reason": "stratified by intent=refund_request",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0001",
+    "reason": "stratified by intent=return_eligibility",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0118",
+    "reason": "stratified by intent=return_eligibility",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0121",
+    "reason": "stratified by intent=return_eligibility",
+    "batch": "batch2_intent"
+  },
+  {
+    "scenario_id": "support-0162",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0131",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0156",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0119",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0157",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0115",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0159",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0161",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "pilot-0001::run2",
+    "reason": "depth search for gratuitous_escalation_offer (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0123",
+    "reason": "depth search for gratuitous_escalation_offer (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "pilot-0036",
+    "reason": "depth search for store_override_handling (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "pilot-0015::run2",
+    "reason": "depth search for store_override_handling (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0163",
+    "reason": "depth search for unnecessary_reconfirmation (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0238::run2",
+    "reason": "depth search for dispute_misidentified_as_refund (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0237::run2",
+    "reason": "depth search for dispute_misidentified_as_refund (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0142",
+    "reason": "depth search for dispute_misidentified_as_refund (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0147",
+    "reason": "depth search for dispute_misidentified_as_refund (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "pilot-0005::run2",
+    "reason": "depth search for data_quality_issue_handling (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0026",
+    "reason": "depth search for data_quality_issue_handling (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "pilot-0003::run2",
+    "reason": "depth search for data_quality_issue_handling (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0030",
+    "reason": "depth search for data_quality_issue_handling (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0229::run2",
+    "reason": "depth search for policy_id_shopper_exposure (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "pilot-0034",
+    "reason": "depth search for policy_id_shopper_exposure (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "pilot-0002::run2",
+    "reason": "depth search for policy_id_shopper_exposure (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0037",
+    "reason": "depth search for policy_id_shopper_exposure (semantic neighbor of a confirmed failure)",
+    "batch": "batch3_depth"
+  },
+  {
+    "scenario_id": "support-0201::run2",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0114",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0105",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0134",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0053",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0212::run2",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "pilot-0040",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0039",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "pilot-0033",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0066",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0018",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0055",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "pilot-0021",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0132",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0223::run2",
+    "reason": "random pick",
+    "batch": "batch4_final_check"
+  },
+  {
+    "scenario_id": "support-0002",
+    "reason": "depth search for gratuitous_escalation_offer (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0033",
+    "reason": "depth search for gratuitous_escalation_offer (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "pilot-0001",
+    "reason": "depth search for gratuitous_escalation_offer (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0124",
+    "reason": "depth search for gratuitous_escalation_offer (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0040",
+    "reason": "depth search for gratuitous_escalation_offer (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0166::run2",
+    "reason": "depth search for unnecessary_reconfirmation (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0158",
+    "reason": "depth search for unnecessary_reconfirmation (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0152",
+    "reason": "depth search for unnecessary_reconfirmation (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0160",
+    "reason": "depth search for unnecessary_reconfirmation (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0164::run2",
+    "reason": "depth search for unnecessary_reconfirmation (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "pilot-0029",
+    "reason": "depth search for data_quality_issue_handling (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0073",
+    "reason": "depth search for data_quality_issue_handling (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "pilot-0029::run2",
+    "reason": "depth search for data_quality_issue_handling (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0011",
+    "reason": "depth search for data_quality_issue_handling (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0019",
+    "reason": "depth search for data_quality_issue_handling (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0151",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "pilot-0010::run2",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "pilot-0002",
+    "reason": "depth search for overstates_refund_capability (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0148",
+    "reason": "depth search for dispute_misidentified_as_refund (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0235::run2",
+    "reason": "depth search for dispute_misidentified_as_refund (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0067",
+    "reason": "depth search for dispute_misidentified_as_refund (semantic neighbor of a confirmed failure)",
+    "batch": "partD_close_negative_search"
+  },
+  {
+    "scenario_id": "support-0006",
+    "reason": "structural search for asserts_eligibility_from_missing_date (delivered_at null, reply asserts a verdict with no mention of the missing date)",
+    "batch": "partD_structural_search"
+  },
+  {
+    "scenario_id": "support-0009",
+    "reason": "structural search for asserts_eligibility_from_missing_date (delivered_at null, reply correctly flags the missing date)",
+    "batch": "partD_structural_search"
+  },
+  {
+    "scenario_id": "support-0010",
+    "reason": "structural search for asserts_eligibility_from_missing_date (delivered_at null, reply asserts a verdict with no mention of the missing date)",
+    "batch": "partD_structural_search"
+  },
+  {
+    "scenario_id": "pilot-0035",
+    "reason": "structural search for store_policy_misattribution (merchant's own store_id is 7 (store-northwind-books-policy), but reply used store-saltbox-pantry-policy)",
+    "batch": "partD_structural_search"
+  }
+]

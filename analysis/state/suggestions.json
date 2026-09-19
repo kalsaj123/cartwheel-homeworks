@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "id": "sugg-data_quality_issue_handling-2daa1f32-64004",
+    "trace_id": "2daa1f3254be56c6e9fa4e0eb2b1b7da",
+    "mode": "data_quality_issue_handling",
+    "quote": "Here's a summary of your recent orders:",
+    "idx": 3
+  }
+]

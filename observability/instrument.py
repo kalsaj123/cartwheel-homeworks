@@ -29,6 +29,7 @@ log = logging.getLogger("cartwheel.instrument")
 
 _genai_instrumented = False
 _openai_tracing_enabled = False
+_raindrop_workshop: Any = None
 
 
 def configure_model_tracing(*, openai_model: bool) -> None:
@@ -108,6 +109,29 @@ def setup_tracing() -> bool:
         return False
     log.info("tracing enabled; spans go to %s", os.environ.get("LANGFUSE_HOST"))
     return True
+
+
+def setup_raindrop_workshop() -> None:
+    """Mirror OpenAI Agents SDK traces to a local Raindrop Workshop daemon.
+
+    Additive only: registers via ``agents.tracing.add_trace_processor``, so
+    it sits alongside whatever ``setup_tracing()`` / ``setup_openai_tracing()``
+    already installed instead of replacing it. Call this AFTER those, since
+    OpenLLMetry's instrumentor swaps in its own processor list on install
+    (``replace_existing_processors=True``) and would otherwise drop Raindrop's.
+
+    No RAINDROP_WRITE_KEY is required for this (Homework 4, Part C) use: the
+    Raindrop SDK auto-detects a local Workshop daemon on localhost:5899 and
+    mirrors interaction/tool events straight to it via its own HTTP client,
+    without touching the OpenTelemetry tracer provider Langfuse owns. A no-op
+    when Workshop is not running.
+    """
+    global _raindrop_workshop
+    if _raindrop_workshop is not None:
+        return
+    from raindrop_openai_agents import create_raindrop_openai_agents
+
+    _raindrop_workshop = create_raindrop_openai_agents()
 
 
 def record_tool_result(ctx: "AuthContext", result: dict[str, Any]) -> None:

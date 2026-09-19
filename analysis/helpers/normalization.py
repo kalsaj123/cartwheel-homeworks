@@ -87,6 +87,38 @@ def _observation_record(value: Any) -> dict[str, Any] | None:
     }
 
 
+def _observation_store_id(raw: dict[str, Any]) -> int | None:
+    """Fall back to the store_id set on individual TOOL spans.
+
+    observability/instrument.py's record_tool_result sets cartwheel.store_id
+    on every tool span for a merchant caller, but the trace-level metadata
+    _metadata() reads does not always carry it (seen live: a merchant trace
+    with no get_order call had no store_id anywhere but here) -- so a review
+    interface reading only the top-level metadata silently shows no store at
+    all for those traces, hiding exactly the information a reviewer needs to
+    check a store-identity claim in the reply against ground truth.
+    """
+    for observation in raw.get("observations") or []:
+        obs = _data(observation)
+        if not isinstance(obs, dict):
+            continue
+        meta = _data(obs.get("metadata"))
+        if not isinstance(meta, dict):
+            continue
+        attributes = meta.get("attributes")
+        if isinstance(attributes, str):
+            try:
+                attributes = json.loads(attributes)
+            except ValueError:
+                attributes = None
+        if isinstance(attributes, dict) and attributes.get("cartwheel.store_id") is not None:
+            try:
+                return int(attributes["cartwheel.store_id"])
+            except (TypeError, ValueError):
+                continue
+    return None
+
+
 def _metadata(record: dict[str, Any]) -> dict[str, Any]:
     """Return trace metadata with nested OpenTelemetry attributes merged in.
 
@@ -246,7 +278,9 @@ def normalize_trace(value: Any) -> dict[str, Any]:
     )
     meta = {
         "role": metadata.get("cartwheel.user_role") or metadata.get("role"),
-        "store": metadata.get("cartwheel.store_id") or metadata.get("store_id"),
+        "store": metadata.get("cartwheel.store_id")
+        or metadata.get("store_id")
+        or _observation_store_id(raw),
         "prompt_version": metadata.get("cartwheel.prompt_version")
         or metadata.get("prompt_version"),
         "scenario_id": raw.get("cartwheel_scenario_id")

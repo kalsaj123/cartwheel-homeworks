@@ -1,1 +1,226 @@
-{"modes": []}
+{
+  "modes": [
+    {
+      "name": "gratuitous_escalation_offer",
+      "definition": "The reply offers to escalate the case to a human, but no ESC-1 through ESC-4 condition (an above-threshold refund, an account change, a dispute or other unresolvable request, or genuine policy uncertainty) is present in the trace.",
+      "status": "candidate",
+      "boundary": "Escalation is expected, not gratuitous, whenever an ESC-1..4 trigger is present -- e.g. a dispute always escalates per ESC-3. This mode applies only when the agent already gave a complete, ordinary answer (e.g., a refund denial, an order status) and then offered escalation anyway, even though none of the ESC-1-4 triggers were actually present.",
+      "example_trace_ids": [
+        "0d0330ac11e331f759b13d7eb98bb6e1",
+        "e342672c0aa0af57fb6fe322f025255a",
+        "0bbb91f282ceec951edad6656beea705",
+        "9da2661fa9fadea67b4c90939580cd22",
+        "8fc7ee3da7ca06196656b6ab51b6f01c",
+        "2321de1118060f9e7bd8ccc6c7efc984",
+        "6db789b2d3f2d4edba9c8c2eede62f02"
+      ],
+      "close_negative_trace_ids": [
+        "e54edb98c79b902de7b055faba8545f5"
+      ],
+      "origin_annotation_ids": [
+        "a1789699441731231",
+        "a1789699712334732",
+        "a1789700563106146",
+        "a1789709148920361",
+        "a1789709242061842",
+        "a1789788720381597",
+        "a1789788728793513"
+      ],
+      "requirement_source": "PROPOSED SPEC.md revision (not yet applied): addition to Section 5 (Escalation policy) -- \"Do not offer escalation as a default hedge when none of ESC-1 through ESC-4 applies and the case is already fully resolved.\" ESC-1..4 and RESP-5 were both considered and found insufficient: Section 5 only establishes a mandatory floor (these cases must escalate), it doesn't forbid offering escalation elsewhere, and RESP-5 (direct, respectful language explaining the decision) is about the tone/clarity of a decision already given, not about withholding an unneeded extra option. A genuine gap, not a stretch of an existing rule.",
+      "evaluator_type": "LLM judge",
+      "notes": "Confirmed via axial coding on batch 1 (2026-09-18); +2 positives accepted from batch 3's depth search (2026-09-18). Evaluator type LLM judge: whether a reply constitutes an escalation 'offer' is a phrasing/intent judgment with no fixed lexical form, same bucket as overstates_refund_capability and dispute_misidentified_as_refund. +2 more positives (2321de11..., 6db789b2...) from Part D's close-negative search round (2026-09-18) -- the search was hoping to surface correctly-handled near-misses, but every candidate it returned for this mode was actually another failure, suggesting this pattern recurs fairly pervasively rather than being an occasional slip with healthy correct-handling nearby. Still only 1 close negative on file."
+    },
+    {
+      "name": "store_override_handling",
+      "definition": "The reply mishandles store-specific policy resolution: it never checks for a store-specific override and answers from the platform default alone, or it explains the two-tier platform-vs-store-override rule in the abstract without ever concluding with a direct answer for the caller's own order/store, or it confidently cites a DIFFERENT store's policy as if it were the caller's own.",
+      "status": "candidate",
+      "boundary": "Merged from three related symptoms (skips the override check; checks but never concludes; cites the wrong store's policy -- the last one absorbed from a separate mode, store_policy_misattribution, on 2026-09-18) rather than kept separate, per Part D's merge guidance: every instance found so far traces back to the same root cause -- the agent doesn't consistently ground store-policy retrieval in the caller's actual store_id/order's store, instead relying on ambiguous keyword search -- so one product fix would plausibly correct all three. The merge was reconsidered specifically because store_policy_misattribution stayed stuck at 1 confirmed instance after a real depth search came up empty, while this mode grew to 7 -- a sign it wasn't sustaining life as an independent mode. Confirmed NOT an authorization/permissions issue: AUTH-1 restricts orders by store (\"View store's orders: merchant, own store only\") but explicitly does not restrict policy documents (\"Search products / policies: yes\" for all three roles, no scope qualifier), and every policy doc's front matter is audience: all. So citing another store's real, legitimately-accessible policy isn't an access-control violation -- it's a grounding/accuracy failure (real information, wrong entity), which is exactly why one retrieval fix (always resolve via ctx.store_id/the order's store, never generic search) addresses it the same way it addresses the other two symptoms. Trigger condition (checked exhaustively against SPEC.md, facts.yaml, and all six store policy pages -- exactly two facts are store-customizable anywhere in this spec, nothing else): applies whenever a reply needs to state a return-window eligibility conclusion or a restocking-fee amount for a specific order, and the agent must resolve that store's own policy (override or opt-in) before answering -- not just the platform default, and not a different store's. All confirmed positives so far are return-window failures; the restocking-fee side only has correct-handling examples (close negatives) -- a real gap to watch for, not evidence the definition should shrink to return-window only.",
+      "example_trace_ids": [
+        "f4f26a73ea77871485eada1667db6ccd",
+        "d8d6714b085ec029052ca890c50f3c49",
+        "0bbb91f282ceec951edad6656beea705",
+        "73c460705eeac834af0c4c95e592662c",
+        "362a8662c713384d9a219e37a51d1df5",
+        "8e042b8795467ac7086ed9241a58a904",
+        "1e1482293e4da8de0bd9b17f2c5aecb4",
+        "b10208eca50109475835e7a6a9d4909b",
+        "0fe876529d67f4c6320b64898afa4abd"
+      ],
+      "close_negative_trace_ids": [
+        "3cff4d4c13dac4a454a5cfb804f1c66d"
+      ],
+      "rejected_search_suggestions": [
+        "0fe876529d67f4c6320b64898afa4abd"
+      ],
+      "origin_annotation_ids": [
+        "a1789698752835709",
+        "a1789698849651234",
+        "a1789700563106146",
+        "a1789703605371198",
+        "a1789709287205553",
+        "a1789750217954713",
+        "a1789751142069361",
+        "a1789751189353611"
+      ],
+      "requirement_source": "PROPOSED SPEC.md revision (not yet applied): \"When a reply must state a return-window or restocking-fee conclusion for a specific order, or cite a store's policy at all, resolve and cite the caller's own store's policy document (via ctx.store_id or the order's actual store) before answering -- do not present the platform default without checking, do not explain the two-tier rule without concluding for the caller's specific case, and do not present a different store's policy as the caller's own.\" RESP-3 was considered and found not to fit for either symptom -- the number/policy asserted is real and valid, just the wrong scope; nothing is invented. AUTH-1 was also considered (for the misattribution symptom specifically) and ruled out -- policy documents are audience: all with no per-store access restriction, so this is a grounding/accuracy gap, not an authorization one.",
+      "evaluator_type": "code check",
+      "notes": "Confirmed via axial coding on batch 1 (2026-09-18), merging two candidate groupings after discussion. Reclassified from LLM judge to code check on 2026-09-18: the ground-truth window/fee is structured DB data, whether the agent called the store-specific get_policy is a structural check on tool args, and the asserted number in the reply is extractable via a reasonably reliable pattern match given how formulaic these replies are. 4th positive (73c460705...) added from a second annotation on a batch-1 trace during batch-2 axial coding -- the student noted this was an inadvertent re-annotation, not a deliberate revisit, but the observation itself still holds and counts as evidence. 5th positive (362a8662c7...) accepted from batch 3's depth search. CORRECTION (2026-09-19): 0fe876529d... was originally accepted as a close negative -- a depth-search candidate the student rejected as a mode instance, reading it as the merchant correctly looking up their store-specific override (store-meridian-cycles-policy) and giving a direct 21-day answer. That reading trusted the reply's own claim, \"Based on your session info (Store ID 2), it looks like your store is Meridian Cycles,\" without independent verification -- and the review interface had no way to check it, because meta.store was reading only trace-level metadata, which this trace doesn't populate (store_id lives on the tool-span metadata instead), so the header showed no store info at all. Checked against the live DB, the seed generator (seed/generate.py's CORE_STORES), and the scenario's own designed answer key (expected.outcome: \"14_days_from_delivery\", reason: \"Juniper Home Goods (store 2) overrides the platform default with a 14-day return window\") -- store 2 is Juniper Home Goods, not Meridian Cycles. The agent asserted a false store identity and answered with the wrong store's window (21 days instead of the real 14-day override). Reclassified from close negative to the mode's 9th positive; kept in rejected_search_suggestions too since that history is still accurate (surfaced by search, initially rejected, later reversed). The interface bug is fixed (analysis/helpers/normalization.py now falls back to observation-level store_id; the header shows the store name looked up from the seeded DB, e.g. \"store: 2 (Juniper Home Goods)\"), so this class of misreading shouldn't recur. The student also noted this trace took 6 tool calls to answer a fairly simple question -- not itself treated as a failure, but flagged as a possible separate efficiency dimension if it keeps recurring; also seen in passing in f4f26a73 and d8d6714b. 6th and 7th positives (8e042b8795..., 1e1482293e...) from batch 4 (the final 15-trace stability check) -- the first is the mode's first merchant-facing instance (merchant asking about their own store's override), the second shopper-facing. No new modes appeared anywhere in batch 4 -- taxonomy treated as stable. 8th positive (b10208eca5...) absorbed from store_policy_misattribution on 2026-09-18 (merge, see boundary) -- a Northwind Books merchant asked about their own store's return window and was confidently told Meridian Cycles' terms instead; this is the mode's first misattribution-shaped instance, previously tracked separately."
+    },
+    {
+      "name": "unnecessary_reconfirmation",
+      "definition": "The customer has already asked for the refund/cancellation to happen (not merely asked about eligibility or status), and every fact the tool call needs (order, amount, reason) is already known -- but the reply asks for permission to proceed (\"want me to go ahead?\") instead of just acting.",
+      "status": "candidate",
+      "boundary": "Distinct from asking a genuinely necessary clarifying question (e.g. the refund reason, or which of two orders is meant) -- this mode only fires when every fact needed to act is already established and the only thing being asked is permission to do the thing already decided. Does not apply when the customer only asked an eligibility/status question and never requested the action -- asking before acting is correct there, not this mode. Checked against SPEC.md: no requirement anywhere mandates seeking confirmation before submitting a refund or cancellation, so this mode does not conflict with any existing requirement.",
+      "example_trace_ids": [
+        "fd13946add1b702fb06446478a461dbd",
+        "69567607a899d6e631dc68e24c4d93ce",
+        "937293c57f71b50f0317836b74752230",
+        "1af31d779ba373bd64f16cf8ad1cbf12",
+        "2cfa8dba0527e186dc21656782e3e091"
+      ],
+      "close_negative_trace_ids": [
+        "0af8613d9f9988bbfd63ce27526e18df"
+      ],
+      "rejected_search_suggestions": [
+        "8420f33c0b", "49d1d5f3b3145d", "8ba556f549342e"
+      ],
+      "origin_annotation_ids": [
+        "a1789699206750933",
+        "a1789703525613196",
+        "a1789698596946813",
+        "a1789789069449888",
+        "a1789789080699820"
+      ],
+      "requirement_source": "PROPOSED SPEC.md revision (not yet applied): \"Once the customer has requested an eligible refund or cancellation and every required fact is known, submit or issue it directly rather than asking for permission to proceed.\" Confirmed no existing requirement forces confirmation (see boundary), but that only rules out a conflict -- it doesn't supply a positive source justifying the mode. RESP-5 was considered and rejected for the same reason it didn't fit gratuitous_escalation_offer: it's about the tone/clarity of a decision already given, not about whether to seek permission before acting.",
+      "evaluator_type": "LLM judge",
+      "notes": "Confirmed via axial coding on batch 2 (2026-09-18). 937293c57f71b50f0317836b74752230 also supports overstates_refund_capability below. Batch 3's depth search for this mode returned only 1 candidate and it was rejected (8420f33c0b) -- this is the mode's recorded rejected-suggestion example for Part D/the video. Evaluator type: initially misclassified as code check on 2026-09-18, then reversed the same day after applying the first-principles test consistently -- the failure condition is whether a trailing question is asking permission for something already decided versus asking for something genuinely still needed, which is a judgment about what the question is doing, not a fact you can look up (unlike store_override_handling's number comparison). Definition also tightened the same day to require the customer already requested the action (not just asked about eligibility), since eligibility alone doesn't make asking-before-acting wrong. +2 positives (1af31d77..., 2cfa8dba...) and 2 more rejected suggestions (49d1d5f3, 8ba556f5) from Part D's close-negative search round (2026-09-18) -- same finding as gratuitous_escalation_offer: every candidate this search returned for this mode was another failure, not a correctly-handled near-miss."
+    },
+    {
+      "name": "overstates_refund_capability",
+      "definition": "The reply implies the agent itself can \"process\"/\"issue\" a refund that is actually above the auto-approve threshold and requires human sign-off, rather than being clear it can only submit or initiate the request.",
+      "status": "candidate",
+      "boundary": "The reply must state or strongly imply the agent can complete the refund; correctly framing it as submitting/initiating a request that a human will approve is not this mode, even when phrased enthusiastically.",
+      "example_trace_ids": [
+        "937293c57f71b50f0317836b74752230",
+        "3cff4d4c13dac4a454a5cfb804f1c66d",
+        "d71d4e4cd8c4dfeb6d6806185d44d288",
+        "9c7954d626bf8b5c735854cbfeb27b9d",
+        "4bd00549c8cb32f13bc9528086e488d2",
+        "277bc33c7be3f512d52bc744459c1d9b"
+      ],
+      "close_negative_trace_ids": [
+        "8abd092973fa7bfce860d51e91d76829",
+        "61eca7f64957473b81a7faed49898f66"
+      ],
+      "rejected_search_suggestions": [
+        "adb431025a", "7ea52c8611", "2d2ea6b234", "d4ed4167e4", "5f64a83c4f"
+      ],
+      "origin_annotation_ids": [
+        "a1789698596946813",
+        "a1789703693376433",
+        "a1789708267806663",
+        "a1789708395404873",
+        "a1789708713100796",
+        "a1789750780671405",
+        "a1789700577377727"
+      ],
+      "requirement_source": "PROPOSED SPEC.md revision (not yet applied): new RESP-6 -- \"Do not claim or imply the agent itself can complete an action that requires human approval (e.g., an above-threshold refund); state that the agent can submit or initiate it, and that a human will decide.\" RESP-2 (do not claim an action succeeded before the tool reports success) was considered and rejected as a fit -- RESP-2 covers falsely claiming something is already done, while this mode is about claiming the agent itself has the authority to complete an action it doesn't have authority over; a real gap, not a stretch of an existing requirement.",
+      "evaluator_type": "LLM judge",
+      "notes": "Confirmed via axial coding on batch 2 (2026-09-18); now past Part D's 3-instance minimum (5 positives) after batch 3's depth search accepted 3 of 8 candidates and rejected 5. 937293c57f71b50f0317836b74752230 also supports unnecessary_reconfirmation above. 6th positive (277bc33c7b...) from batch 4 (the final stability check) -- no new modes appeared anywhere in that batch. Evaluator type confirmed LLM judge (2026-09-18): whether phrasing implies the agent's own capability is an abstract-intent judgment, same bucket as gratuitous_escalation_offer and dispute_misidentified_as_refund. 2nd close negative (61eca7f6..., 2026-09-18): an above-threshold refund correctly framed as 'queued for human approval' -- same underlying situation as the positives, handled right, which is a good sign: the model is capable of the correct phrasing, this is a consistency gap rather than a hard capability gap, supporting a spec-tightening fix over a larger behavioral change."
+    },
+    {
+      "name": "dispute_misidentified_as_refund",
+      "definition": "The customer's message indicates a charge dispute (contesting a charge, not a routine return/refund request), but the reply proceeds as an ordinary refund inquiry -- quoting refund eligibility, asking for a return reason -- instead of recognizing ESC-3 and escalating.",
+      "status": "candidate",
+      "boundary": "Requires actual dispute language from the customer (contesting a charge as wrong/unauthorized), not just any refund-adjacent request. A close negative is a trace with similar refund-eligibility phrasing where the customer is not disputing anything -- just asking for a normal refund.",
+      "example_trace_ids": [
+        "90900fc30666311899039a2a77de99a5",
+        "f4c594937e7c1011962966db56cbfbbc",
+        "908ece20228a9ffd2e51a639063c4031",
+        "bfc12eb9b7770027a0e66e26cdcd42d6"
+      ],
+      "close_negative_trace_ids": [
+        "b65bc99d90", "e238d87fee", "0346eb9815b52fc4b17e1331613a43b0"
+      ],
+      "rejected_search_suggestions": [
+        "b65bc99d90", "e238d87fee", "0346eb9815b52fc4b17e1331613a43b0", "b45505559d3970"
+      ],
+      "origin_annotation_ids": [
+        "a178970311304435",
+        "a1789709442410923",
+        "a1789709450160142",
+        "a1789789847994597"
+      ],
+      "requirement_source": "ESC-3",
+      "evaluator_type": "LLM judge",
+      "notes": "Promoted from a single-instance watch item to a confirmed candidate mode on 2026-09-18, after batch 3's depth search returned 2 more positives and 2 rejects. The 2 rejects (b65bc99d90, e238d87fee) were promoted to close negatives on 2026-09-18: reviewed as candidate positives, rejected because the customer used no dispute language -- ordinary refund-eligibility replies, which is exactly the boundary this mode needs to draw. Kept in rejected_search_suggestions too, since both facts are true (surfaced by the depth search, rejected as a positive, repurposed as a close negative). Requirement source ESC-3 (disputes always go to a human) and cw-disputes.md ('always handled by a human support agent, never resolved automatically') -- existing requirement, no SPEC revision needed. Evaluator type LLM judge: both 'does the customer's message read as a dispute' and 'does the reply treat it as an ordinary refund' are intent judgments with no fixed lexical form. 4th positive (bfc12eb9..., 2026-09-18) from Part D's close-negative search round -- a strong, clean instance: the customer's message literally said 'I want to dispute a charge,' and the reply still processed it as an ordinary refund-eligibility check. 3rd close negative (0346eb98..., 2026-09-18, also from that search) now reaches Part D's 3-close-negative target for this mode -- a plain 'can I get a refund' request, correctly handled, no dispute language at all."
+    },
+    {
+      "name": "data_quality_issue_handling",
+      "definition": "The trace involves bad underlying data (a blank/incomplete listing, a product misattributed to the wrong store, a pricing error, etc.), and the reply either fails to escalate it internally or hesitates -- asking for confirmation before opening a ticket -- instead of just escalating.",
+      "status": "candidate",
+      "boundary": "The failure is in the response to a genuine data problem, not the data problem itself. A close negative directly opens the ticket/escalates without asking the user for permission first.",
+      "example_trace_ids": [
+        "207549a7410504a6d66e8eb713813bc6",
+        "19dfcb2677f6a06ad1f82b449889927c",
+        "e4d2ddb597d9a1be6bee38873396a04a",
+        "c83e8d347b6a4e6804e2ca44bf6f8e3a",
+        "7ccd8074f5f9b051d79884c9fc955f85",
+        "2de8b571c7dae149d091585c7267c681"
+      ],
+      "close_negative_trace_ids": [
+        "a63791f92dacce2941d6501651cb38b2",
+        "87e35b4203b89f1934dcde6a80077562"
+      ],
+      "rejected_search_suggestions": [],
+      "origin_annotation_ids": [
+        "a1789700298888293",
+        "a1789702907453483",
+        "a1789709498259395",
+        "a1789709537076458",
+        "a178970955137631",
+        "a1789709673920267"
+      ],
+      "requirement_source": "PROPOSED SPEC.md revision (not yet applied): clarify escalation policy -- when escalation is the correct action (a known data problem the agent cannot resolve from the data, or any ESC-1..4 trigger), the agent should open the ticket / initiate the action directly rather than asking the customer or internal user for permission first. ESC-3 was considered and found insufficient as-is: it establishes that these cases eventually go to a human, but doesn't forbid hesitating or asking permission before escalating, which is the actual failure observed here. Stylistically the same pattern as unnecessary_reconfirmation (asks permission before doing the thing it should just do), just applied to escalation instead of refund submission -- kept as a separate mode since the trigger condition and tool path differ, but a single SPEC clarification could plausibly cover both.",
+      "evaluator_type": "LLM judge",
+      "notes": "Promoted from a single-instance watch item to a confirmed candidate mode on 2026-09-18, after batch 3's depth search returned 4 more positives (0 rejected -- every candidate this search returned was a genuine instance). 7th positive (2de8b571...) from Part C's Workshop inspection (a negative-priced product, 'reach out to the store or I can escalate' instead of just escalating) -- no annotations.json entry since this trace is outside the reviewed 100-trace sample (a fresh CLI run, not scenario-tagged); see analysis/report/workshop_notes.md for the full trace. Evaluator type LLM judge (2026-09-18): whether a data-quality issue exists could be cheaply checked against the seeded data_quality_cases table in THIS synthetic dataset, but that is a test-fixture shortcut, not a generalizable evaluator -- a real production system has no such pre-registered table of known defects. The actual failure condition (hesitating instead of escalating directly) is a phrasing/intent judgment either way, so the mode is classified as LLM judge overall rather than a hybrid. CORRECTION (2026-09-19): 87e35b4203... was reclassified from positive to close negative during Part E full-corpus labeling -- on a fresh read, the reply calls escalate_to_human directly with no hesitation or permission-asking at all ('I've opened ticket #151 for a human agent to dig into this'), which is exactly the mode's own definition of correct handling. The original positive call likely conflated 'this trace involves a genuine data-quality issue' with 'this trace demonstrates the failure' -- the issue was real, but the response to it was actually good. Student-confirmed correction."
+    },
+    {
+      "name": "asserts_eligibility_from_missing_date",
+      "definition": "The reply states or implies a return-window conclusion (e.g. \"the window has passed\") for an order whose required dates are missing/null (delivered_at absent) OR chronologically inconsistent (shipped_at recorded after delivered_at), instead of recognizing the date problem and escalating rather than asserting anything to the customer.",
+      "status": "candidate",
+      "boundary": "MERGED on 2026-09-19: previously treated the reversed-date case (shipped after delivered) as a distinct, unbuilt defect type; now folded in, since both are the same downstream failure (asserting a timeline without validating the dates it depends on) and one fix (validate all relevant date fields before asserting anything) covers both. Still distinct from a routine, internally-consistent delivered order -- this mode only fires when the specific dates needed for the eligibility math are either absent or self-contradictory.",
+      "example_trace_ids": [
+        "4dc51588e6f08ce02cc6dfe8aaefc2cb",
+        "e4efb710a7b2528ec06c1a839a9fb573",
+        "73c460705eeac834af0c4c95e592662c",
+        "9da2661fa9fadea67b4c90939580cd22",
+        "2321de1118060f9e7bd8ccc6c7efc984"
+      ],
+      "close_negative_trace_ids": [],
+      "rejected_search_suggestions": ["1aeea1f5a46ff5", "5ad6b7f2aa6cc2"],
+      "origin_annotation_ids": ["e4efb710a7b2528ec06c1a839a9fb573"],
+      "requirement_source": "RESP-3",
+      "evaluator_type": "code check",
+      "notes": "New candidate mode from Part C's Workshop inspection (2026-09-18), not manual review -- order 8002 (dq-order-missing-delivery-date) has delivered_at: null, and the reply asserts 'the 30-day return window has passed' with no mention that the date is missing. Directly covered by an EXISTING requirement (RESP-3: 'State when required information is missing or inconsistent, rather than inventing a value') -- no SPEC.md revision needed, unlike the still-open RESP-1 tension. The student's stated boundary: this should escalate to a human immediately with no assertion made to the customer at all. No annotations.json entry (fresh CLI run, outside the reviewed 100-trace sample); see analysis/report/workshop_notes.md for the full trace. Evaluator type code check (2026-09-18): delivered_at: null is a structural field, and detecting a definitive eligibility verdict/day-count in the reply is closer to concrete-claim extraction than open-ended intent, given how templated this agent's responses are -- same reasoning as store_override_handling. Caveat: this relies on the agent's responses staying consistently templated; a more free-form agent would need a judge instead. IMPORTANT CAVEAT (student-confirmed, 2026-09-18): Part D's structural search found a 2nd positive (e4efb710...), but it is the SAME underlying order (8002) as the original -- the seed only created one order with this exact defect, so there is no way to get 3 independent instances from this dataset. MERGE (2026-09-19, student decision): while applying the taxonomy to the full 125-trace review set, checked seed/generate.py directly and confirmed order 8001 carries its own documented seeded defect, dq-order-reversed-dates ('The recorded shipment date occurs after the delivery date', expected_handling: 'Identify the inconsistent chronology and escalate instead of asserting a timeline') -- previously anticipated in this mode's own boundary text but never built out. 3 traces in the review set reference order 8001 (73c460705e..., 9da2661fa9f..., 2321de1118...), all asserting a confident 'outside the window' verdict with zero mention of the shipped-after-delivered inconsistency; all 3 added as positives here per the merge decision. Two of the three (9da2661fa9f..., 2321de1118...) are also existing gratuitous_escalation_offer positives -- expected, a trace can carry more than one mode. Structural check (analysis/apply_structural_checks.py) updated to flag shipped_at > delivered_at the same way it flags delivered_at is null. CAVEAT (still applies, now for both defects): 5 positives total, but only 2 distinct underlying orders (8001 x3, 8002 x2) -- not 5 independent instances, a hard limitation of this seed's data. 1 rejected suggestion (1aeea1f5, a different order, correctly not flagged) and 1 unresolved rejection (5ad6b7f2, guessed as a close negative by the structural search but the student rejected it -- reason not recorded, worth re-checking if this mode gets more attention later)."
+    }
+  ],
+  "agentdebug_comparison": {
+    "compared_on": "2026-09-18",
+    "source": "AgentDebug failure taxonomy, https://arxiv.org/abs/2509.25370 (AgentErrorTaxonomy: Memory, Reflection, Planning, Action, System modules)",
+    "method": "Mapped all 7 active modes against AgentErrorTaxonomy's categories (see chat for the full table). Most categories don't transfer -- AgentDebug targets multi-step planning agents (ALFWorld/WebShop/GAIA), while Cartwheel is a mostly single-turn, tool-calling support agent with no long-horizon planning or memory in the same sense. The two categories that could plausibly transfer regardless of domain are System > Tool Execution Error and Action > Parameter Error (a tool call fails or is malformed, and the agent mishandles that). Checked both directly against the corpus rather than assuming: (1) scanned all 450 traces for tool_result content with ok: false -- only two codes appear, permission_denied (31, all get_order calls correctly blocked by AUTH-1, agent recovered gracefully in every case sampled) and not_found (6, all search_products with an unmatched store filter, agent recovered/moved on sensibly in every case sampled); (2) scanned raw Langfuse observation levels for ERROR across all 450 traces -- exactly 87, and every one is the already-known HW3 billing-outage LLM-call failure (see hw3_billing_outage_null_traces.md), zero at the tool level.",
+    "conclusion": "No new mode added. No evidence in this corpus of an 'agent mishandles a tool error' failure pattern distinct from what's already covered -- the two structured error codes that occur are both handled correctly every time sampled, and the only ERROR-level events are the unrelated billing outage. Per the handout's rule, a mode is added only when the student's own traces and annotations support it; this comparison surfaced no such evidence. Spot-check only covered 3 examples per code out of 31 permission_denied / 6 not_found -- flagged as a residual gap, not escalated further since the sampled behavior was consistently correct and the codes themselves are expected, designed outcomes (AUTH-1 enforcement; an empty search result), not malformed calls."
+  },
+  "merged_modes": [
+    {
+      "name": "store_policy_misattribution",
+      "merged_into": "store_override_handling",
+      "merged_on": "2026-09-18",
+      "definition": "The reply presents a DIFFERENT store's policy/override as if it were the caller's own, because the retrieval was a generic keyword search not grounded in the caller's actual authenticated store_id.",
+      "reason_for_merge": "Reconsidered under Part D's actual merge test (would one product fix correct both?), not severity -- all three store_override_handling symptoms plus this one trace back to the same root cause (retrieval not grounded in ctx.store_id/the order's store), and this mode was stuck at 1 instance after a real depth search came up empty. Confirmed not an authorization violation first (policy docs are audience: all, no per-store access restriction) -- this is an accuracy/grounding failure, which is exactly the kind of failure one retrieval fix corrects across all symptoms. See store_override_handling's boundary and requirement_source for the merged definition and proposed fix.",
+      "example_trace_ids": ["b10208eca50109475835e7a6a9d4909b"],
+      "rejected_search_suggestions": ["c6f18a02eb9bd6"],
+      "note": "Kept here rather than deleted outright, so the sequence from observation to category stays inspectable per the handout's own requirement -- this was a real, separately-considered candidate mode before the merge, not a mistake to erase."
+    }
+  ]
+}

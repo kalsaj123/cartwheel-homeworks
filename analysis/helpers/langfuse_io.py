@@ -145,7 +145,15 @@ def fetch_traces(
         trace_id = str(full.id)
         if trace_id in seen:
             continue
-        normalized = normalize_trace(full)
+        try:
+            normalized = normalize_trace(full)
+        except ValueError:
+            # A trace with no renderable messages or segments (e.g. an ad hoc
+            # CLI run with no tool calls and a missing output field) has
+            # nothing this module can use anyway -- it would be filtered out
+            # by the scenario_id check below regardless. Skip it rather than
+            # letting one malformed trace crash every other trace's fetch.
+            continue
         if tag is None and not normalized.get("meta", {}).get("scenario_id"):
             continue
         seen[trace_id] = normalized

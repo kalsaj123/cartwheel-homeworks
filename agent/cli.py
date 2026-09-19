@@ -45,7 +45,12 @@ from agent import db
 from agent.agent import build_agent, prompt_version
 from agent.auth import AuthContext
 from agent.config import REPO_ROOT
-from observability.instrument import load_env, setup_openai_tracing, setup_tracing
+from observability.instrument import (
+    load_env,
+    setup_openai_tracing,
+    setup_raindrop_workshop,
+    setup_tracing,
+)
 
 DEFAULT_USERS = {"shopper": 1, "merchant": 9001, "support": 9501}
 MAX_TURNS = 12  # cap runaway loops; keeps conversations bounded
@@ -217,6 +222,11 @@ def main() -> None:
             tracing = setup_openai_tracing()
         except ValueError as exc:
             parser.error(str(exc))
+    if tracing:
+        # Homework 4, Part C: mirror this run to a local Workshop daemon, if
+        # one is running. Additive — never replaces the Langfuse/OpenAI
+        # processor selected above.
+        setup_raindrop_workshop()
     ctx = resolve_auth(args.role, args.user)
     asyncio.run(
         chat(ctx, args.model, defenses=args.defenses, debug=args.debug, tracing=tracing)

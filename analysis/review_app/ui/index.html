@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<!--
+  Homework 4 review interface. Built on the reference in analysis/ui/index.html
+  (same annotation-popover mechanic, same visual encoding), but not that file
+  unchanged -- see analysis/report/interface_comparison.md for the specifics.
+
+  What's different from the reference, and why:
+
+    1. Conversation view (was: single-trace view). Cartwheel logs one Langfuse
+       trace per user turn, so a multi-turn conversation is split across
+       several traces. This view groups them (server-side, by scenario_id --
+       see server.py's docstring on why not session_id) and renders every
+       turn in one continuous scroll with a divider between turns, so a
+       reviewer doing open coding never loses the earlier turns' tool calls
+       when reading a followup.
+    2. Labeling view (new). The reference has no present/absent mechanism at
+       all -- only free-text notes and an AI-suggestion queue. Part E needs
+       one present/absent judgment per (trace, final mode) pair, so this adds
+       a grid: rows are individual traces (turns), columns are failure modes.
+    3. Taxonomy view (was: half of the reference's Progress view). Split out
+       so "current taxonomy + supporting annotations" has its own tab.
+    4. Progress view now reports reviewed/total and incomplete judgments,
+       which the reference's treemap-only view did not track.
+
+  Kept unchanged from the reference: the text-select-to-annotate popover, the
+  margin-note layout and hover-linking, and the AI-suggestion accept/dismiss
+  controls (all already satisfy what the handout asks for).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cartwheel HW4 review</title>
+<style>
+  :root {
+    --role-user: #2563eb;
+    --role-assistant: #059669;
+    --role-tool-call: #b45309;
+    --role-tool-result: #7c3aed;
+    --role-system: #6b7280;
+    --role-observation: #0891b2;
+
+    --bg: #f7f7f8;
+    --panel: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --hl: #fde68a;
+    --hl-pending: #fef08a;
+    --sugg: #ddd6fe;
+    --sugg-border: #7c3aed;
+    --pass: #059669;
+    --fail: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+  }
+  code, pre, .mono { font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; }
+
+  header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 18px; background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 50;
+  }
+  header h1 { font-size: 15px; margin: 0; font-weight: 700; }
+  header h1 .dim { color: var(--muted); font-weight: 400; }
+  .views { display: flex; gap: 4px; }
+  .views button {
+    border: 1px solid var(--line); background: var(--bg);
+    padding: 6px 14px; border-radius: 6px; cursor: pointer; font: inherit;
+  }
+  .views button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .spacer { flex: 1; }
+  .counts { color: var(--muted); font-size: 13px; }
+  .nav { display: flex; gap: 4px; align-items: center; }
+  .nav button {
+    border: 1px solid var(--line); background: var(--bg);
+    width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font: inherit;
+  }
+  .nav .pos { color: var(--muted); font-size: 13px; min-width: 74px; text-align: center; }
+
+  #toast {
+    position: fixed; right: 18px; bottom: 18px; z-index: 100;
+    background: var(--ink); color: #fff; padding: 10px 16px;
+    border-radius: 8px; font-size: 13px; opacity: 0; pointer-events: none;
+    transition: opacity .2s; max-width: 340px;
+  }
+  #toast.show { opacity: 1; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ---- conversation view ---- */
+  #conversation-view { padding: 20px 18px 120px; }
+  .conv-header {
+    display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline;
+    max-width: 980px; margin: 0 auto 14px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .conv-header .tid { font-weight: 700; }
+  .conv-header .meta { color: var(--muted); font-size: 13px; }
+  .conv-header .expected-disclosure {
+    display: block; width: 100%; margin-top: 8px;
+  }
+  .conv-header .expected-disclosure summary {
+    cursor: pointer; color: var(--muted); font-size: 12px; font-style: italic;
+  }
+  .conv-header .expected {
+    display: block; width: 100%; margin-top: 6px; padding: 8px 12px;
+    background: #f3f4f6; border-radius: 6px; color: var(--muted); font-size: 12.5px;
+  }
+  .conv-header .expected b { color: var(--ink); }
+  .hint-bar { max-width: 980px; margin: 0 auto 12px; color: var(--muted); font-size: 12.5px; }
+
+  .turn-meta {
+    max-width: 720px; margin: -8px 0 10px; color: var(--muted); font-size: 12px;
+  }
+  .conv-body-wrap {
+    display: flex; gap: 24px; max-width: 980px; margin: 0 auto;
+    align-items: flex-start; position: relative;
+  }
+  .conv-body { flex: 1; max-width: 720px; }
+  .margin-col { width: 240px; position: relative; flex-shrink: 0; }
+
+  .step {
+    border: 1px solid var(--line); border-radius: 8px;
+    margin-bottom: 20px; overflow: hidden; background: var(--panel);
+  }
+  .turn-divider {
+    max-width: 720px; margin: 0 0 20px; padding: 4px 0;
+    color: var(--muted); font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .turn-divider::before, .turn-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  .msg { padding: 10px 14px; border-left: 4px solid var(--line); }
+  .msg + .msg { border-top: 1px solid var(--line); }
+  .msg .role {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .04em; margin-bottom: 5px;
+  }
+  .msg[data-role="user"]        { border-left-color: var(--role-user); }
+  .msg[data-role="user"] .role        { color: var(--role-user); }
+  .msg[data-role="assistant"]   { border-left-color: var(--role-assistant); }
+  .msg[data-role="assistant"] .role   { color: var(--role-assistant); }
+  .msg[data-role="tool_call"]   { border-left-color: var(--role-tool-call); }
+  .msg[data-role="tool_call"] .role   { color: var(--role-tool-call); }
+  .msg[data-role="tool_result"] { border-left-color: var(--role-tool-result); }
+  .msg[data-role="tool_result"] .role { color: var(--role-tool-result); }
+  .msg[data-role="system"]      { border-left-color: var(--role-system); opacity: .55; }
+  .msg[data-role="system"] .role      { color: var(--role-system); }
+  .msg[data-role="observation"] { border-left-color: var(--role-observation); }
+  .msg[data-role="observation"] .role { color: var(--role-observation); }
+
+  .msg .text { white-space: pre-wrap; word-wrap: break-word; }
+  .fn { font-weight: 700; }
+  details.args { margin-top: 6px; }
+  details.args summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+  pre.json {
+    background: #f3f4f6; border-radius: 6px; padding: 8px 10px; margin: 6px 0 0;
+    font-size: 12.5px; overflow-x: auto; white-space: pre;
+  }
+  .result-summary { color: var(--muted); font-size: 13px; }
+
+  .hl { background: var(--hl); border-radius: 2px; cursor: pointer; }
+  .hl.pending-highlight { background: var(--hl-pending); }
+  .hl.sugg { background: var(--sugg); border-bottom: 2px dashed var(--sugg-border); }
+  .hl.outline { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+  .mnote {
+    position: absolute; left: 0; width: 100%;
+    background: var(--panel); border-left: 3px solid var(--hl);
+    border-radius: 4px; padding: 7px 9px; font-size: 12.5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .mnote.sugg { border-left-color: var(--sugg-border); background: #faf5ff; }
+  .mnote.outline { box-shadow: 0 0 0 2px var(--ink); }
+  .mnote .quote { color: var(--muted); font-style: italic; margin-bottom: 3px; }
+  .mnote .body { white-space: pre-wrap; }
+  .mnote .tag {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    color: var(--sugg-border); text-transform: uppercase; margin-bottom: 3px;
+  }
+  .mnote .acts { margin-top: 5px; display: flex; gap: 6px; }
+  .mnote .acts button {
+    border: 1px solid var(--line); background: var(--bg); font: inherit;
+    font-size: 11px; padding: 2px 8px; border-radius: 5px; cursor: pointer;
+  }
+  .mnote .acts .accept { border-color: var(--role-assistant); color: var(--role-assistant); }
+  .mnote .acts .reject { border-color: #dc2626; color: #dc2626; }
+  .mnote.human .acts { visibility: hidden; }
+  .mnote.human:hover .acts { visibility: visible; }
+
+  #popover {
+    position: absolute; z-index: 200; display: none;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.16); padding: 8px;
+  }
+  #popover input {
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;
+    font: inherit; width: 280px;
+  }
+  #popover .hint { color: var(--muted); font-size: 11px; margin-top: 4px; }
+  #add-note-btn {
+    position: absolute; z-index: 199; display: none;
+    width: 28px; height: 28px; border-radius: 50%; border: none;
+    background: var(--ink); color: #fff; font-size: 18px; line-height: 1;
+    cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  #add-note-btn:hover { background: var(--role-user); }
+
+  .toolbar { max-width: 980px; margin: 0 auto 14px; display: flex; gap: 8px; align-items: center; }
+  .toolbar input[type=text] {
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font: inherit; width: 220px;
+  }
+  .toolbar button {
+    border: 1px solid var(--line); background: var(--panel); font: inherit;
+    padding: 6px 12px; border-radius: 6px; cursor: pointer;
+  }
+
+  /* ---- taxonomy / progress ---- */
+  #taxonomy-view, #progress-view { padding: 18px; max-width: 980px; margin: 0 auto; }
+  .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase;
+                   letter-spacing: .04em; color: var(--muted); margin: 18px 0 10px; }
+  #treemap { display: flex; flex-wrap: wrap; gap: 10px; }
+  .mode-block {
+    border: 1px solid var(--line); border-radius: 8px; padding: 12px;
+    background: var(--panel); min-width: 210px; flex: 1 1 210px;
+  }
+  .mode-block h3 { margin: 0 0 4px; font-size: 14px; font-family: ui-monospace, monospace; }
+  .mode-block .count { float: right; color: var(--muted); font-weight: 400; }
+  .mode-block .def { color: var(--muted); font-size: 12.5px; margin: 4px 0 8px; }
+  .mode-block .notes { list-style: none; margin: 0; padding: 0; }
+  .mode-block .notes li { font-size: 12.5px; padding: 3px 0; border-top: 1px dashed var(--line); cursor: pointer; }
+  .mode-block .notes li:hover { color: var(--role-user); }
+  .mode-block .status {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    padding: 1px 6px; border-radius: 8px; margin-left: 6px;
+  }
+  .status.candidate { background: #fef3c7; color: #92400e; }
+  .status.confirmed { background: #d1fae5; color: #065f46; }
+  .status.frozen    { background: #e0e7ff; color: #3730a3; }
+
+  #sugg-queue { background: var(--panel); border: 1px solid var(--line);
+                border-radius: 8px; padding: 12px; }
+  .queue-tools { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .queue-tools button {
+    border: 1px solid var(--line); background: var(--bg); font: inherit;
+    font-size: 12px; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  }
+  .queue-tools .accept { border-color: var(--role-assistant); color: var(--role-assistant); }
+  .queue-tools .dismiss { border-color: #dc2626; color: #dc2626; }
+  .sugg-row { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0;
+              border-top: 1px solid var(--line); font-size: 13px; }
+  .sugg-row .mode { font-family: ui-monospace, monospace; font-size: 12px;
+                    color: var(--sugg-border); min-width: 170px; }
+  .sugg-row .quote { flex: 1; cursor: pointer; }
+  .sugg-row .quote:hover { color: var(--role-user); }
+  .empty { color: var(--muted); font-size: 13px; padding: 10px 0; }
+
+  .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .stat {
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px;
+    background: var(--panel); min-width: 140px;
+  }
+  .stat .n { font-size: 22px; font-weight: 700; }
+  .stat .l { color: var(--muted); font-size: 12px; }
+
+  /* ---- labeling view ---- */
+  #labeling-view { padding: 18px; max-width: 1100px; margin: 0 auto; }
+  /* border-collapse: collapse silently breaks position: sticky on <th> in
+     some browsers -- separate (with border-spacing: 0 to keep the same look)
+     is the fix. */
+  table.label-grid { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; }
+  table.label-grid th, table.label-grid td {
+    border: 1px solid var(--line); padding: 6px 8px; text-align: left;
+  }
+  table.label-grid th {
+    background: var(--panel); position: sticky; top: var(--header-h, 49px);
+    z-index: 10; box-shadow: 0 1px 0 var(--line);
+  }
+  table.label-grid td.row-id { font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted); cursor: pointer; }
+  table.label-grid td.row-id:hover { color: var(--role-user); }
+  .cell-btn {
+    border: 1px solid var(--line); background: var(--bg); border-radius: 5px;
+    padding: 3px 10px; cursor: pointer; font: inherit; font-size: 12px; min-width: 56px;
+  }
+  .cell-btn.pass { background: #d1fae5; border-color: var(--pass); color: #065f46; }
+  .cell-btn.fail { background: #fee2e2; border-color: var(--fail); color: #991b1b; }
+  .cell-btn.suggested { background: #fef9c3; border-color: #ca8a04; color: #854d0e; border-style: dashed; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Cartwheel <span class="dim">HW4 review</span></h1>
+  <div class="views">
+    <button data-view="conversation" class="active">Conversation</button>
+    <button data-view="taxonomy">Taxonomy</button>
+    <button data-view="labeling">Labeling</button>
+    <button data-view="progress">Progress</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="nav" id="conv-nav">
+    <button id="prev">&larr;</button>
+    <span class="pos" id="pos">0 / 0</span>
+    <button id="next">&rarr;</button>
+  </div>
+  <div class="counts" id="counts"></div>
+</header>
+
+<div id="conversation-view" class="view active">
+  <div class="toolbar">
+    <input type="text" id="add-scenario" placeholder="scenario_id, e.g. support-0002" />
+    <button id="add-scenario-btn">Add to sample</button>
+    <button id="expand-all-btn">Expand all</button>
+    <span class="empty" id="conv-source"></span>
+  </div>
+  <div class="hint-bar">Tip: click-and-drag to select any text below, click the "+" that appears, then type a note -- that's how you leave a free-form annotation.</div>
+  <div class="conv-header" id="conv-header"></div>
+  <div class="conv-body-wrap">
+    <div class="conv-body" id="conv-body"></div>
+    <div class="margin-col" id="margin-col"></div>
+  </div>
+</div>
+
+<div id="taxonomy-view" class="view">
+  <div class="section-title">Failure modes (current taxonomy)</div>
+  <div id="treemap"></div>
+</div>
+
+<div id="labeling-view" class="view">
+  <div class="empty" id="labeling-empty" style="display:none">
+    No traces in the sample yet. Add scenario ids from the Conversation view first.
+  </div>
+  <!-- No overflow-x:auto wrapper here on purpose: per the CSS overflow spec,
+       overflow-x: auto forces overflow-y to compute as auto too (even if
+       overflow-y is explicitly set to visible) -- there's no way to get
+       "scrolls horizontally, transparent to vertical sticky" on one element.
+       That div was the grid's sticky <th> row's positioning context instead
+       of the page, and since the div itself never scrolls (it just grows to
+       fit all 125 rows), the sticky header silently never engaged. At normal
+       desktop widths the table (8 columns) fits without horizontal scroll
+       anyway; if the window is ever narrower than the table, the page itself
+       scrolls horizontally, which does not break the header's sticky top. -->
+  <table class="label-grid" id="label-table"></table>
+</div>
+
+<div id="progress-view" class="view">
+  <div class="section-title">Review progress</div>
+  <div class="stat-row" id="progress-stats"></div>
+  <div class="section-title">Agent suggestions to review</div>
+  <div id="sugg-queue"></div>
+</div>
+
+<button id="add-note-btn" title="Add a note on this selection">+</button>
+<div id="popover"><input id="note-input" placeholder="what went wrong? (Enter to save)" /><div class="hint">first failure only, in your own words</div></div>
+<div id="toast"></div>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * State + API                                                         *
+ * ------------------------------------------------------------------ */
+const state = {
+  conversations: {},   // {scenario_id: {scenario_id, meta, turns: [{trace_id, timestamp, messages}]}}
+  conversationSource: '',
+  sampleManifest: [],  // [{scenario_id, reason, batch}]
+  annotations: [],      // [{id, trace_id, idx, quote, note, ts}]
+  suggestions: [],       // [{id, trace_id, idx, mode, quote}]
+  patterns: {},
+  labels: {},            // {mode: [{trace_id, label, note, ts}]}
+  structuralSuggestions: [], // [{trace_id, mode, suggested_label, signal}] -- precomputed code-check verdicts, pending confirmation
+  dismissedSuggestions: new Set(), // "mode::trace_id" keys the student has clicked past -- stops the cell from reverting to the suggested display once they've moved on from it (see cycleLabel)
+  modes: [],
+  cur: 0,
+};
+
+const api = {
+  async get(path) { const r = await fetch(path); return r.json(); },
+  async post(path, body) {
+    const r = await fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'},
+                       body: JSON.stringify(body)});
+    return r.json();
+  },
+};
+
+function asAnnotationList(a) {
+  if (Array.isArray(a)) return a;
+  if (a && Array.isArray(a.annotations)) return a.annotations;
+  return [];
+}
+
+async function loadAll() {
+  const [convResp, samples, annotations, suggestions, patterns, modes, structuralSuggestions] = await Promise.all([
+    api.get('/api/conversations'), api.get('/api/samples'),
+    api.get('/api/annotations'), api.get('/api/suggestions'),
+    api.get('/api/patterns'), api.get('/api/modes'),
+    api.get('/api/structural_suggestions'),
+  ]);
+  state.conversations = convResp.conversations || {};
+  state.conversationSource = convResp.source || '';
+  state.sampleManifest = Array.isArray(samples) ? samples : [];
+  state.annotations = asAnnotationList(annotations);
+  state.suggestions = Array.isArray(suggestions) ? suggestions : [];
+  state.patterns = patterns && typeof patterns === 'object' ? patterns : {};
+  state.structuralSuggestions = Array.isArray(structuralSuggestions) ? structuralSuggestions : [];
+  state.modes = mergedModes(modes, state.patterns);
+  await loadLabels();
+}
+
+// A mode gets a Labeling column once it's in patterns.json, even before its
+// first saved judgment creates a labels/<mode>.jsonl file -- /api/modes alone
+// only lists existing label files. Shared by loadAll() and poll() so a
+// periodic refresh can't silently drop the fold-in (it used to: poll()
+// overwrote state.modes from /api/modes alone, which made a code-check
+// mode's column disappear again once poll() next fired).
+function mergedModes(rawModes, patterns) {
+  const modes = Array.isArray(rawModes) ? rawModes.slice() : [];
+  normalizePatterns(patterns).forEach(m => {
+    if (m.name && !modes.includes(m.name)) modes.push(m.name);
+  });
+  return modes;
+}
+
+async function loadLabels() {
+  const all = await api.get('/api/labels');
+  state.labels = all && typeof all === 'object' ? all : {};
+}
+
+function backupAnnotations() {
+  try { localStorage.setItem('cartwheel_hw4_annotations', JSON.stringify(state.annotations)); }
+  catch (e) {}
+}
+async function saveAnnotations() {
+  backupAnnotations();
+  await api.post('/api/annotations', state.annotations);
+}
+
+/* ------------------------------------------------------------------ *
+ * Conversation view                                                   *
+ * ------------------------------------------------------------------ */
+function curSampleEntry() { return state.sampleManifest[state.cur]; }
+function curConversation() {
+  const s = curSampleEntry();
+  return s ? state.conversations[s.scenario_id] : null;
+}
+
+/* Flatten a conversation's turns into one array with turn-boundary markers
+   and a stable idx per item, so the existing annotation-by-idx mechanic
+   (borrowed from the reference UI) works across turn boundaries. Each real
+   message carries its own trace_id, since a conversation spans several
+   underlying Langfuse traces. */
+function flattenConversation(conv) {
+  const items = [];
+  (conv.turns || []).forEach((turn, ti) => {
+    if (ti > 0) items.push({role: 'turn_boundary', turn: ti + 1, trace_id: turn.trace_id});
+    (turn.messages || []).forEach(m => items.push({...m, trace_id: turn.trace_id}));
+  });
+  return items;
+}
+
+function renderConvHeader() {
+  const conv = curConversation();
+  const entry = curSampleEntry();
+  const h = document.getElementById('conv-header');
+  const src = document.getElementById('conv-source');
+  src.textContent = state.conversationSource ? `source: ${state.conversationSource}` : '';
+  if (!conv) {
+    h.innerHTML = '<span class="meta">no conversation loaded -- add a scenario_id above</span>';
+    return;
+  }
+  const m = conv.meta || {};
+  const bits = [`<span class="tid">${escape(conv.scenario_id)}</span>`];
+  if (m.role) bits.push(`<span class="meta">role: ${escape(m.role)}</span>`);
+  if (m.user_id) bits.push(`<span class="meta">user: ${escape(m.user_id)}</span>`);
+  if (m.store) bits.push(`<span class="meta">store: ${escape(m.store)}${m.store_name ? ' (' + escape(m.store_name) + ')' : ''}</span>`);
+  if (m.scenario_group) bits.push(`<span class="meta">group: ${escape(m.scenario_group)}</span>`);
+  bits.push(`<span class="meta">${(conv.turns || []).length} turn(s)</span>`);
+  if (entry && entry.reason) bits.push(`<span class="meta">sample reason: ${escape(entry.reason)}</span>`);
+
+  const exp = m.expected;
+  if (exp) {
+    // Collapsed by default and deliberately not styled as a verdict banner:
+    // this is the scenario's designed answer key. Showing it open, before a
+    // reviewer forms their own judgment, turns open coding into checking a
+    // pre-computed conclusion instead of independent discovery. It stays
+    // available -- useful once you've written your own note, to cross-check
+    // against the scenario's intent and to cite a requirement source in Part D.
+    const src = exp.source || {};
+    bits.push(
+      `<details class="expected-disclosure"><summary>scenario design intent (open after you've formed your own judgment)</summary>` +
+      `<div class="expected"><b>Designed outcome:</b> ${escape(exp.outcome || '')} ` +
+      `(${escape(src.type || 'unspecified source')}${src.reference ? ': ' + escape(src.reference) : ''}) -- ${escape(exp.reason || '')}</div></details>`
+    );
+  }
+  h.innerHTML = bits.join(' ');
+}
+
+/* Last assistant text per turn, so the outcome can be surfaced right after
+   the user's message instead of making the reviewer scroll past every tool
+   call first. The reply is moved there, not copied -- it renders exactly
+   once, right after the user message, and the tool-call trail that produced
+   it follows after. Each message keeps its original idx (its position in the
+   flattened item list), so reordering where it renders does not disturb
+   annotation lookups, which key off that idx rather than DOM order. */
+function renderConversation() {
+  const conv = curConversation();
+  const body = document.getElementById('conv-body');
+  if (!conv) { body.innerHTML = ''; return; }
+  const items = flattenConversation(conv);
+  const html = [];
+  let turnIndex = 0;
+  let segment = []; // {m, idx} entries for the turn currently being collected
+
+  function flushSegment() {
+    if (!segment.length) return;
+    const userEntries = segment.filter(e => e.m.role === 'user');
+    let finalIdx = -1;
+    for (let k = segment.length - 1; k >= 0; k--) {
+      if (segment[k].m.role === 'assistant') { finalIdx = k; break; }
+    }
+    const finalEntry = finalIdx >= 0 ? segment[finalIdx] : null;
+    const rest = segment.filter((e, k) => e.m.role !== 'user' && k !== finalIdx);
+
+    userEntries.forEach(e => html.push(`<div class="step">${renderMsg(e.m, e.idx)}</div>`));
+
+    const turnData = (conv.turns || [])[turnIndex] || {};
+    const n = turnData.tool_call_count;
+    if (n !== undefined && n !== null) {
+      html.push(`<div class="turn-meta">${n === 0 ? 'no tool calls' : n === 1 ? '1 tool call' : `${n} tool calls`} this turn</div>`);
+    }
+    if (finalEntry) {
+      html.push(`<div class="step">${renderMsg(finalEntry.m, finalEntry.idx)}</div>`);
+    }
+
+    let i = 0;
+    while (i < rest.length) {
+      const {m, idx} = rest[i];
+      if (m.role === 'tool_call' && i + 1 < rest.length && rest[i + 1].m.role === 'tool_result') {
+        html.push(`<div class="step">${renderMsg(m, idx)}${renderMsg(rest[i + 1].m, rest[i + 1].idx)}</div>`);
+        i += 2;
+      } else {
+        html.push(`<div class="step">${renderMsg(m, idx)}</div>`);
+        i++;
+      }
+    }
+    segment = [];
+  }
+
+  items.forEach((m, idx) => {
+    if (m.role === 'turn_boundary') {
+      flushSegment();
+      html.push(`<div class="turn-divider">turn ${m.turn}</div>`);
+      turnIndex = m.turn - 1;
+    } else {
+      segment.push({m, idx});
+    }
+  });
+  flushSegment();
+
+  body.innerHTML = html.join('');
+  applyHighlights();
+  layoutMargin();
+}
+
+function renderMsg(m, idx) {
+  const role = m.role || 'assistant';
+  const label = (m.label || role).replace(/_/g, ' ');
+  let inner = '';
+  if (role === 'tool_call') {
+    inner = `<div class="fn">${escape(m.name || 'tool')}()</div>`;
+    if (m.arguments !== undefined) {
+      inner += `<details class="args" open><summary>arguments</summary>` +
+               `<pre class="json">${escape(pretty(m.arguments))}</pre></details>`;
+    }
+  } else if (role === 'tool_result') {
+    const full = pretty(m.content !== undefined ? m.content : m.text);
+    const long = full.length > 240;
+    if (long) {
+      inner = `<details class="args"><summary class="result-summary">result (${full.length} chars)</summary>` +
+              `<pre class="json annotatable" data-idx="${idx}" data-trace="${escape(m.trace_id || '')}">${escape(full)}</pre></details>`;
+    } else {
+      inner = `<pre class="json annotatable" data-idx="${idx}" data-trace="${escape(m.trace_id || '')}">${escape(full)}</pre>`;
+    }
+  } else {
+    const text = m.text !== undefined ? m.text : pretty(m.content);
+    inner = `<div class="text annotatable" data-idx="${idx}" data-trace="${escape(m.trace_id || '')}">${md(text)}</div>`;
+  }
+  return `<div class="msg" data-role="${role}" data-idx="${idx}">` +
+         `<div class="role">${escape(label)}</div>${inner}</div>`;
+}
+
+document.getElementById('expand-all-btn').onclick = () => {
+  document.querySelectorAll('#conv-body details.args').forEach(d => d.open = true);
+};
+
+document.getElementById('add-scenario-btn').onclick = async () => {
+  const input = document.getElementById('add-scenario');
+  const sid = input.value.trim();
+  if (!sid) return;
+  if (!state.sampleManifest.some(s => s.scenario_id === sid)) {
+    state.sampleManifest.push({scenario_id: sid, reason: 'manually added for review', batch: 'manual'});
+    await api.post('/api/samples', state.sampleManifest);
+  }
+  if (!state.conversations[sid]) {
+    const convResp = await api.get('/api/conversations?refresh=1');
+    state.conversations = convResp.conversations || {};
+    state.conversationSource = convResp.source || '';
+  }
+  input.value = '';
+  state.cur = state.sampleManifest.findIndex(s => s.scenario_id === sid);
+  renderConvHeader(); renderConversation(); updatePos(); updateCounts();
+  toast(state.conversations[sid] ? 'added and loaded' : 'added, but no conversation found with that scenario_id');
+};
+
+/* ------------------------------------------------------------------ *
+ * Highlights + margin notes (unchanged from the reference UI)         *
+ * ------------------------------------------------------------------ */
+function itemsForConversation() {
+  const conv = curConversation();
+  if (!conv) return [];
+  const traceIds = new Set((conv.turns || []).map(t => t.trace_id));
+  const anns = state.annotations.filter(a => traceIds.has(a.trace_id)).map(a => ({...a, kind: 'human'}));
+  const sugg = state.suggestions.filter(s => traceIds.has(s.trace_id)).map(s => ({...s, kind: 'sugg'}));
+  return [...anns, ...sugg];
+}
+
+function applyHighlights() {
+  const items = itemsForConversation();
+  document.querySelectorAll('.annotatable').forEach(el => {
+    const idx = parseInt(el.dataset.idx, 10);
+    const mine = items.filter(it => it.idx === idx);
+    if (!mine.length) return;
+    let text = el.textContent;
+    const ranges = [];
+    mine.forEach(it => {
+      if (!it.quote) return;
+      const pos = text.indexOf(it.quote);
+      if (pos >= 0) ranges.push([pos, pos + it.quote.length, it]);
+    });
+    if (!ranges.length) return;
+    ranges.sort((a, b) => a[0] - b[0]);
+    let out = '', cursor = 0;
+    ranges.forEach(([s, e, it]) => {
+      if (s < cursor) return;
+      out += escape(text.slice(cursor, s));
+      const cls = it.kind === 'sugg' ? 'hl sugg' : 'hl';
+      out += `<span class="${cls}" data-item="${it.id}">${escape(text.slice(s, e))}</span>`;
+      cursor = e;
+    });
+    out += escape(text.slice(cursor));
+    el.innerHTML = out;
+  });
+}
+
+function layoutMargin() {
+  const col = document.getElementById('margin-col');
+  col.innerHTML = '';
+  const items = itemsForConversation();
+  if (!items.length) return;
+  const colRect = col.getBoundingClientRect();
+  let lastBottom = 0;
+  const withPos = items.map(it => {
+    const hl = document.querySelector(`.hl[data-item="${it.id}"]`);
+    const top = hl ? (hl.getBoundingClientRect().top - colRect.top) : 0;
+    return {it, top, hl};
+  }).sort((a, b) => a.top - b.top);
+
+  withPos.forEach(({it, top, hl}) => {
+    const note = document.createElement('div');
+    note.className = 'mnote ' + (it.kind === 'sugg' ? 'sugg' : 'human');
+    note.dataset.item = it.id;
+    let html = '';
+    if (it.kind === 'sugg') html += `<div class="tag">agent · ${escape(it.mode || '')}</div>`;
+    if (it.quote) html += `<div class="quote">"${escape(clip(it.quote, 80))}"</div>`;
+    html += `<div class="body">${escape(it.note || (it.kind === 'sugg' ? '(suggested instance)' : ''))}</div>`;
+    if (it.kind === 'sugg') {
+      html += `<div class="acts"><button class="accept" data-accept="${it.id}">accept</button>` +
+              `<button class="reject" data-reject="${it.id}">dismiss</button></div>`;
+    } else {
+      html += `<div class="acts"><button data-del="${it.id}">delete</button></div>`;
+    }
+    note.innerHTML = html;
+    const y = Math.max(top, lastBottom);
+    note.style.top = y + 'px';
+    col.appendChild(note);
+    lastBottom = y + note.offsetHeight + 8;
+
+    if (hl) {
+      note.addEventListener('mouseenter', () => hl.classList.add('outline'));
+      note.addEventListener('mouseleave', () => hl.classList.remove('outline'));
+      hl.addEventListener('mouseenter', () => note.classList.add('outline'));
+      hl.addEventListener('mouseleave', () => note.classList.remove('outline'));
+    }
+  });
+
+  col.querySelectorAll('[data-accept]').forEach(b => b.onclick = () => acceptSuggestion(b.dataset.accept));
+  col.querySelectorAll('[data-reject]').forEach(b => b.onclick = () => dismissSuggestion(b.dataset.reject));
+  col.querySelectorAll('[data-del]').forEach(b => b.onclick = () => deleteAnnotation(b.dataset.del));
+}
+
+/* ------------------------------------------------------------------ *
+ * In-place annotation.                                                *
+ *                                                                     *
+ * Two changes from the reference this was originally copied from:    *
+ *                                                                     *
+ * 1. Wrapping the selection used Range.surroundContents(), which      *
+ *    throws (silently, so the popover just never appeared) whenever a *
+ *    selection's start or end falls partway inside a formatted        *
+ *    element -- e.g. the **bold** markdown around order numbers and   *
+ *    policy names is extremely common in these replies, so this hit   *
+ *    constantly. extractContents() + a manual wrap-and-reinsert         *
+ *    handles a selection spanning multiple/partial nodes instead of   *
+ *    crashing on it.                                                  *
+ * 2. Selecting text now shows a small "+" button rather than jumping  *
+ *    straight to a focused text input (Google-Docs/Medium style),     *
+ *    so an incidental drag-select while reading doesn't pop open a    *
+ *    note box, and the click-to-confirm step is the discoverable       *
+ *    affordance instead of an undocumented keyboard-only flow.        *
+ * ------------------------------------------------------------------ */
+let pendingRange = null;
+let pendingCtx = null;
+
+document.getElementById('conv-body').addEventListener('mouseup', () => {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  const text = sel.toString().trim();
+  if (!text) return;
+  const anchor = sel.anchorNode && sel.anchorNode.parentElement
+    ? sel.anchorNode.parentElement.closest('.annotatable') : null;
+  if (!anchor) return;
+
+  const range = sel.getRangeAt(0);
+  const span = document.createElement('span');
+  span.className = 'hl pending-highlight';
+  try {
+    span.appendChild(range.extractContents());
+    range.insertNode(span);
+  } catch (e) { return; }
+  pendingRange = span;
+  pendingCtx = {
+    trace_id: anchor.dataset.trace,
+    quote: text,
+    idx: parseInt(anchor.dataset.idx, 10),
+  };
+  sel.removeAllRanges();
+
+  const rect = span.getBoundingClientRect();
+  const btn = document.getElementById('add-note-btn');
+  btn.style.display = 'block';
+  btn.style.left = (window.scrollX + rect.right + 6) + 'px';
+  btn.style.top = (window.scrollY + rect.top - 4) + 'px';
+});
+
+document.getElementById('add-note-btn').addEventListener('click', () => {
+  const btn = document.getElementById('add-note-btn');
+  const rect = btn.getBoundingClientRect();
+  btn.style.display = 'none';
+  const pop = document.getElementById('popover');
+  pop.style.display = 'block';
+  pop.style.left = (window.scrollX + rect.left) + 'px';
+  pop.style.top = (window.scrollY + rect.bottom + 6) + 'px';
+  const input = document.getElementById('note-input');
+  input.value = '';
+  input.focus();
+});
+
+document.getElementById('note-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { commitAnnotation(); }
+  else if (e.key === 'Escape') { cancelAnnotation(); }
+});
+document.addEventListener('mousedown', (e) => {
+  const pop = document.getElementById('popover');
+  const btn = document.getElementById('add-note-btn');
+  if (pop.style.display === 'block' && !pop.contains(e.target)) cancelAnnotation();
+  else if (btn.style.display === 'block' && e.target !== btn) cancelAnnotation();
+});
+
+function clearPending() {
+  if (pendingRange && pendingRange.parentNode) {
+    const parent = pendingRange.parentNode;
+    while (pendingRange.firstChild) parent.insertBefore(pendingRange.firstChild, pendingRange);
+    parent.removeChild(pendingRange);
+    parent.normalize();
+  }
+  pendingRange = null; pendingCtx = null;
+  document.getElementById('popover').style.display = 'none';
+  document.getElementById('add-note-btn').style.display = 'none';
+}
+function cancelAnnotation() { clearPending(); renderConversation(); }
+
+async function commitAnnotation() {
+  const note = document.getElementById('note-input').value.trim();
+  if (!note || !pendingCtx) { clearPending(); return; }
+  state.annotations.push({
+    id: 'a' + Date.now() + Math.floor(Math.random() * 1000),
+    trace_id: pendingCtx.trace_id,
+    quote: pendingCtx.quote,
+    idx: pendingCtx.idx,
+    note, ts: new Date().toISOString(),
+  });
+  clearPending();
+  await saveAnnotations();
+  renderConversation();
+  renderProgress();
+  toast('saved · first-failure note recorded');
+}
+
+async function deleteAnnotation(id) {
+  state.annotations = state.annotations.filter(a => a.id !== id);
+  await saveAnnotations();
+  renderConversation(); renderProgress();
+}
+
+async function acceptSuggestion(id) {
+  const s = state.suggestions.find(x => x.id === id);
+  if (!s) return;
+  state.annotations.push({
+    id: 'a' + Date.now() + Math.floor(Math.random() * 1000),
+    trace_id: s.trace_id, quote: s.quote, idx: s.idx,
+    note: s.mode ? `[${s.mode}]` : '(accepted)',
+    source: 'accepted_suggestion', mode: s.mode, ts: new Date().toISOString(),
+  });
+  state.suggestions = state.suggestions.filter(x => x.id !== id);
+  await saveAnnotations();
+  await api.post('/api/suggestions', state.suggestions);
+  renderConversation(); renderProgress();
+}
+async function dismissSuggestion(id) {
+  state.suggestions = state.suggestions.filter(x => x.id !== id);
+  await api.post('/api/suggestions', state.suggestions);
+  renderConversation(); renderProgress();
+}
+
+/* ------------------------------------------------------------------ *
+ * Taxonomy view                                                       *
+ * ------------------------------------------------------------------ */
+function normalizePatterns(p) {
+  if (!p || typeof p !== 'object') return [];
+  if (Array.isArray(p.modes)) return p.modes.filter(m => m && m.name);
+  return Object.entries(p).map(([name, m]) => ({name, ...(m || {})}));
+}
+function modeCount(m) {
+  if (typeof m.count === 'number') return m.count;
+  if (typeof m.any_instance_count === 'number') return m.any_instance_count;
+  if (typeof m.first_failure_count === 'number') return m.first_failure_count;
+  return (m.example_trace_ids || []).length;
+}
+function renderTaxonomy() {
+  const el = document.getElementById('treemap');
+  const modes = normalizePatterns(state.patterns);
+  if (!modes.length) { el.innerHTML = '<div class="empty">No modes yet. As you annotate and axial-code, add them to patterns.json.</div>'; return; }
+  modes.sort((a, b) => modeCount(b) - modeCount(a));
+  el.innerHTML = modes.map(m => {
+    const ids = m.example_trace_ids || [];
+    const quotes = m.example_quotes || [];
+    const items = (quotes.length ? quotes : ids).slice(0, 6).map((val, i) =>
+      `<li data-tid="${escape(quotes.length ? (ids[i] || '') : val)}">${escape(clip(val, 90))}</li>`).join('');
+    const status = m.status || 'candidate';
+    const grow = Math.max(1, modeCount(m));
+    return `<div class="mode-block" style="flex-grow:${grow}">` +
+      `<h3>${escape(m.name)}<span class="status ${status}">${status}</span>` +
+      `<span class="count">${modeCount(m)}</span></h3>` +
+      `<div class="def">${escape(m.definition || '')}</div>` +
+      `<ul class="notes">${items}</ul></div>`;
+  }).join('');
+  el.querySelectorAll('li[data-tid]').forEach(li => {
+    li.onclick = () => { if (li.dataset.tid) gotoTrace(li.dataset.tid); };
+  });
+}
+
+/* ------------------------------------------------------------------ *
+ * Labeling view: one present/absent decision per (trace, final mode)  *
+ * ------------------------------------------------------------------ */
+function allSampledTraces() {
+  const rows = [];
+  state.sampleManifest.forEach(entry => {
+    const conv = state.conversations[entry.scenario_id];
+    if (!conv) return;
+    (conv.turns || []).forEach((turn, ti) => {
+      rows.push({
+        trace_id: turn.trace_id,
+        scenario_id: entry.scenario_id,
+        turn_index: ti + 1,
+        turn_count: (conv.turns || []).length,
+      });
+    });
+  });
+  return rows;
+}
+
+function renderLabeling() {
+  const rows = allSampledTraces();
+  document.getElementById('labeling-empty').style.display = rows.length ? 'none' : 'block';
+  const table = document.getElementById('label-table');
+  if (!rows.length) { table.innerHTML = ''; return; }
+  const modes = state.modes.length ? state.modes : ['(no modes yet)'];
+
+  const labelFor = (mode, traceId) => {
+    const list = state.labels[mode] || [];
+    const rec = list.find(r => r.trace_id === traceId);
+    return rec ? rec.label : null;
+  };
+  const suggestionFor = (mode, traceId) => {
+    if (state.dismissedSuggestions.has(mode + '::' + traceId)) return null;
+    return state.structuralSuggestions.find(s => s.mode === mode && s.trace_id === traceId);
+  };
+
+  const thead = `<tr><th>trace</th>${modes.map(m => `<th>${escape(m)}</th>`).join('')}</tr>`;
+  const tbody = rows.map(r => {
+    const cells = modes.map(m => {
+      const v = labelFor(m, r.trace_id);
+      if (v === null) {
+        const sugg = suggestionFor(m, r.trace_id);
+        if (sugg) {
+          const label = sugg.suggested_label === 1 ? 'Fail?' : 'Pass?';
+          return `<td><button class="cell-btn suggested" data-mode="${escape(m)}" data-trace="${escape(r.trace_id)}" title="${escape(sugg.signal)} (structural check -- click to confirm, click again to override)">${label}</button></td>`;
+        }
+      }
+      const cls = v === 1 ? 'fail' : v === 0 ? 'pass' : '';
+      const label = v === 1 ? 'Fail' : v === 0 ? 'Pass' : 'unset';
+      return `<td><button class="cell-btn ${cls}" data-mode="${escape(m)}" data-trace="${escape(r.trace_id)}">${label}</button></td>`;
+    }).join('');
+    return `<tr><td class="row-id" data-scenario="${escape(r.scenario_id)}">${escape(r.scenario_id)} · turn ${r.turn_index}/${r.turn_count}</td>${cells}</tr>`;
+  }).join('');
+  // A real <thead> matters, not just a <tr> of <th>s: without it the parser
+  // wraps the header row into the same implicit <tbody> as every data row,
+  // and position: sticky on a <th> is unreliable outside an actual <thead>
+  // in some browsers -- that silently broke the sticky mode-name row.
+  table.innerHTML = `<thead>${thead}</thead><tbody>${tbody}</tbody>`;
+
+  table.querySelectorAll('td.row-id').forEach(td => {
+    td.onclick = () => gotoScenario(td.dataset.scenario);
+  });
+  table.querySelectorAll('.cell-btn').forEach(btn => {
+    btn.onclick = () => cycleLabel(btn.dataset.mode, btn.dataset.trace);
+  });
+}
+
+/* Cycle unset -> Fail (1) -> Pass (0) -> unset, saving to the server (and,
+   when the trace is a real Langfuse id, to a Langfuse score) on each click. */
+async function cycleLabel(mode, traceId) {
+  const list = state.labels[mode] || [];
+  const existing = list.find(r => r.trace_id === traceId);
+  let next;
+  let note;
+  if (!existing) {
+    // A pending structural suggestion pre-fills the cell's displayed value;
+    // the first click should confirm exactly that value, not always jump to
+    // Fail -- otherwise confirming a suggested "Pass" would silently flip it.
+    const key = mode + '::' + traceId;
+    const sugg = !state.dismissedSuggestions.has(key)
+      && state.structuralSuggestions.find(s => s.mode === mode && s.trace_id === traceId);
+    if (sugg) {
+      next = sugg.suggested_label;
+      note = `confirmed from structural check: ${sugg.signal}`;
+      // Mark it dismissed now, not just on override: once engaged with, the
+      // cell must never revert to showing "Pass?"/"Fail?" again. Without
+      // this, cycling away from the confirmed value lands back on "unset",
+      // which then redisplays as the same suggestion (it's still in
+      // structuralSuggestions) -- trapping the cell between only the
+      // suggested value and its own confirmation, unable to ever reach the
+      // opposite label.
+      state.dismissedSuggestions.add(key);
+    } else {
+      next = 1;
+    }
+  }
+  else if (existing.label === 1) next = 0;
+  else next = null;
+
+  if (next === null) {
+    state.labels[mode] = list.filter(r => r.trace_id !== traceId);
+    // no delete endpoint; represent "unset" locally only until relabeled.
+    renderLabeling();
+    return;
+  }
+  const result = await api.post('/api/labels', {trace_id: traceId, mode, label: next, note});
+  await loadLabels();
+  renderLabeling();
+  renderProgress();
+  if (result.langfuse_synced === false && !traceId.startsWith('offline::')) {
+    toast('saved locally; Langfuse sync did not confirm');
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Progress view                                                       *
+ * ------------------------------------------------------------------ */
+function renderProgress() {
+  const total = state.sampleManifest.length;
+  const annotatedScenarios = new Set(
+    state.annotations.map(a => {
+      for (const entry of state.sampleManifest) {
+        const conv = state.conversations[entry.scenario_id];
+        if (conv && (conv.turns || []).some(t => t.trace_id === a.trace_id)) return entry.scenario_id;
+      }
+      return null;
+    }).filter(Boolean)
+  );
+  const rows = allSampledTraces();
+  const modes = state.modes;
+  let incomplete = 0;
+  rows.forEach(r => {
+    const missing = modes.some(m => !(state.labels[m] || []).some(rec => rec.trace_id === r.trace_id));
+    if (missing) incomplete++;
+  });
+
+  document.getElementById('progress-stats').innerHTML = `
+    <div class="stat"><div class="n">${total}</div><div class="l">in sample</div></div>
+    <div class="stat"><div class="n">${annotatedScenarios.size}</div><div class="l">with an open-coding note</div></div>
+    <div class="stat"><div class="n">${rows.length}</div><div class="l">traces (turns) to label</div></div>
+    <div class="stat"><div class="n">${modes.length ? rows.length - incomplete : 0}</div><div class="l">fully labeled (${modes.length} mode(s))</div></div>
+    <div class="stat"><div class="n">${incomplete}</div><div class="l">incomplete judgments</div></div>
+  `;
+  renderQueue();
+}
+
+function renderQueue() {
+  const el = document.getElementById('sugg-queue');
+  if (!state.suggestions.length) { el.innerHTML = '<div class="empty">No pending suggestions.</div>'; return; }
+  const rows = state.suggestions.map(s =>
+    `<div class="sugg-row"><input type="checkbox" data-id="${s.id}" checked />` +
+    `<span class="mode">${escape(s.mode || '')}</span>` +
+    `<span class="quote" data-trace="${escape(s.trace_id)}">"${escape(clip(s.quote || '', 110))}"</span></div>`
+  ).join('');
+  el.innerHTML =
+    `<div class="queue-tools">` +
+    `<label><input type="checkbox" id="sel-all" checked /> select all</label>` +
+    `<button class="accept" id="accept-sel">Accept selected</button>` +
+    `<button class="dismiss" id="dismiss-sel">Dismiss selected</button>` +
+    `<span class="empty" style="padding:0">${state.suggestions.length} pending · favor recall, prune the rest</span>` +
+    `</div>` + rows;
+
+  document.getElementById('sel-all').onchange = (e) => {
+    el.querySelectorAll('.sugg-row input[type=checkbox]').forEach(c => c.checked = e.target.checked);
+  };
+  el.querySelectorAll('.quote[data-trace]').forEach(q =>
+    q.onclick = () => gotoTrace(q.dataset.trace));
+  document.getElementById('accept-sel').onclick = () => bulkQueue(true);
+  document.getElementById('dismiss-sel').onclick = () => bulkQueue(false);
+}
+
+async function bulkQueue(accept) {
+  const el = document.getElementById('sugg-queue');
+  const ids = [...el.querySelectorAll('.sugg-row input[type=checkbox]:checked')].map(c => c.dataset.id);
+  for (const id of ids) { accept ? await acceptSuggestion(id) : await dismissSuggestion(id); }
+}
+
+/* ------------------------------------------------------------------ *
+ * Navigation + view switching                                        *
+ * ------------------------------------------------------------------ */
+function gotoScenario(sid) {
+  const i = state.sampleManifest.findIndex(s => s.scenario_id === sid);
+  if (i < 0) { toast('that scenario is not in the current sample'); return; }
+  state.cur = i;
+  switchView('conversation');
+  renderConvHeader(); renderConversation(); updatePos();
+}
+function gotoTrace(traceId) {
+  const entry = state.sampleManifest.find(s => {
+    const conv = state.conversations[s.scenario_id];
+    return conv && (conv.turns || []).some(t => t.trace_id === traceId);
+  });
+  if (!entry) { toast('that trace is not in the current sample'); return; }
+  gotoScenario(entry.scenario_id);
+}
+function updatePos() {
+  document.getElementById('pos').textContent =
+    state.sampleManifest.length ? `${state.cur + 1} / ${state.sampleManifest.length}` : '0 / 0';
+}
+document.getElementById('prev').onclick = () => {
+  if (state.cur > 0) { state.cur--; renderConvHeader(); renderConversation(); updatePos(); }
+};
+document.getElementById('next').onclick = () => {
+  if (state.cur < state.sampleManifest.length - 1) { state.cur++; renderConvHeader(); renderConversation(); updatePos(); }
+};
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'j' || e.key === 'ArrowDown' || e.key === 'ArrowRight') document.getElementById('next').click();
+  if (e.key === 'k' || e.key === 'ArrowUp' || e.key === 'ArrowLeft') document.getElementById('prev').click();
+});
+
+// The Labeling grid's <th> row is sticky so mode names stay visible while
+// scrolling past 125 rows -- it needs the app header's real height as its
+// sticky offset, or it sticks to the very top of the page and ends up
+// hidden underneath the app header instead of below it (both were pinned to
+// the same y=0). Measured live rather than hardcoded since the header's
+// height changes if its contents wrap at a narrower width.
+function syncHeaderHeight() {
+  const h = document.querySelector('header').getBoundingClientRect().height;
+  document.documentElement.style.setProperty('--header-h', h + 'px');
+}
+window.addEventListener('resize', syncHeaderHeight);
+syncHeaderHeight();
+
+function switchView(name) {
+  document.querySelectorAll('.views button').forEach(b =>
+    b.classList.toggle('active', b.dataset.view === name));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(name + '-view').classList.add('active');
+  document.getElementById('conv-nav').style.display = name === 'conversation' ? 'flex' : 'none';
+  syncHeaderHeight();
+  if (name === 'taxonomy') renderTaxonomy();
+  if (name === 'labeling') renderLabeling();
+  if (name === 'progress') renderProgress();
+}
+document.querySelectorAll('.views button').forEach(b =>
+  b.onclick = () => switchView(b.dataset.view));
+
+function updateCounts() {
+  document.getElementById('counts').textContent =
+    `${state.sampleManifest.length} in sample · ${state.annotations.length} notes · ` +
+    `${normalizePatterns(state.patterns).length} modes · ${state.suggestions.length} suggestions`;
+}
+
+/* ------------------------------------------------------------------ *
+ * Polling (unchanged pattern from the reference UI)                   *
+ * ------------------------------------------------------------------ */
+let lastSig = '';
+async function poll() {
+  try {
+    const [samples, suggestions, patterns, annotations, modes] = await Promise.all([
+      api.get('/api/samples'), api.get('/api/suggestions'),
+      api.get('/api/patterns'), api.get('/api/annotations'), api.get('/api/modes'),
+    ]);
+    const key = a => a.id || `${a.trace_id}::${(a.note || '').slice(0, 40)}`;
+    const seen = new Set(state.annotations.map(key));
+    const remote = asAnnotationList(annotations);
+    const merged = [...state.annotations];
+    remote.forEach(a => { const k = key(a); if (!seen.has(k)) { seen.add(k); merged.push(a); } });
+
+    const sig = JSON.stringify([
+      Array.isArray(samples) ? samples.length : 0,
+      Array.isArray(suggestions) ? suggestions.length : 0,
+      normalizePatterns(patterns).length, merged.length,
+      Array.isArray(modes) ? modes.length : 0,
+    ]);
+    if (sig === lastSig) return;
+    lastSig = sig;
+
+    state.sampleManifest = Array.isArray(samples) ? samples : state.sampleManifest;
+    state.suggestions = Array.isArray(suggestions) ? suggestions : state.suggestions;
+    state.patterns = patterns && typeof patterns === 'object' ? patterns : state.patterns;
+    state.annotations = merged;
+    state.modes = mergedModes(modes, state.patterns);
+    await loadLabels();
+
+    renderConvHeader(); renderConversation(); updatePos(); updateCounts();
+  } catch (e) { /* server not up yet; keep trying */ }
+}
+
+/* ------------------------------------------------------------------ *
+ * Utilities                                                          *
+ * ------------------------------------------------------------------ */
+function escape(s) {
+  return String(s === undefined || s === null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function md(s) {
+  return escape(s)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\n/g, '<br>');
+}
+function pretty(v) {
+  if (typeof v === 'string') return v;
+  try { return JSON.stringify(v, null, 2); } catch (e) { return String(v); }
+}
+function clip(s, n) { s = String(s || ''); return s.length > n ? s.slice(0, n) + '…' : s; }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ------------------------------------------------------------------ *
+ * Boot                                                               *
+ * ------------------------------------------------------------------ */
+(async function boot() {
+  await loadAll();
+  renderConvHeader(); renderConversation(); updatePos(); updateCounts();
+  setInterval(poll, 2000);
+})();
+</script>
+</body>
+</html>
