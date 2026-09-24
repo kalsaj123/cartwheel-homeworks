@@ -1,0 +1,32 @@
+{
+  "judge_id": "unnecessary_reconfirmation-v3",
+  "split": "test",
+  "tpr": 0.8714,
+  "tnr": 0.9091,
+  "tpr_interval": [
+    0.7734,
+    0.9309
+  ],
+  "tnr_interval": [
+    0.6226,
+    0.9838
+  ],
+  "agreement": 0.8765,
+  "tp": 61,
+  "fn": 9,
+  "tn": 10,
+  "fp": 1,
+  "n": 81,
+  "disagreements": [
+    "1041c605a9c7ffb92f0f90626770253c",
+    "120694a5d0d0db5405e3f06665fbcbc5",
+    "352b4131ac22f3466d29cf0fe75938d9",
+    "392d3d32050ea08cfd9c3b3f9e1ec034",
+    "431958e92dc1634fac350c74066e7c74",
+    "521a8c6df8e83aa0f6b6b64a4b680a7a",
+    "7d2e0ef1646f394bbcd5d1646511e544",
+    "8a624537fae80bef5429d56b745843cf",
+    "a01b896a6737409b64eae0d380006085",
+    "cc1282ffd7df517e0f0edf60d0c74c02"
+  ]
+}

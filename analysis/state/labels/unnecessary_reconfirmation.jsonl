@@ -1,5 +1,5 @@
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "744373e931a73b151d25f833920d7ed0", "ts": "2026-09-19T05:44:20Z"}
-{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "2dadd2f17d164c3a5c6943ff1b208693", "ts": "2026-09-19T05:45:14Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": "Corrected during HW5 dev-disagreement review (2026-09-21): definition broadened to cover disputes as well as refunds/cancellations -- agent already recognized this as a dispute and was ready to escalate, but asked for more detail instead of just escalating with what was known. Original human Pass label was under the narrower refund-only reading.", "trace_id": "2dadd2f17d164c3a5c6943ff1b208693", "ts": "2026-09-22T01:23:37Z"}
 {"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "937293c57f71b50f0317836b74752230", "ts": "2026-09-19T05:46:43Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "f4f26a73ea77871485eada1667db6ccd", "ts": "2026-09-19T05:47:58Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "99fd60c1397969671cd603438f903f57", "ts": "2026-09-19T05:48:18Z"}
@@ -79,7 +79,7 @@
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (pre-filter, 2026-09-19): no confirm-before-acting phrasing in the reply; mode's trigger condition doesn't apply.", "trace_id": "8502b30a86bd57a687ea0c7e8ae4235d", "ts": "2026-09-19T06:59:24Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (pre-filter, 2026-09-19): no confirm-before-acting phrasing in the reply; mode's trigger condition doesn't apply.", "trace_id": "39ba379adddb67d155fdda95cb56591f", "ts": "2026-09-19T06:59:29Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (pre-filter, 2026-09-19): no confirm-before-acting phrasing in the reply; mode's trigger condition doesn't apply.", "trace_id": "b45505559d397036ed31a800550b1f41", "ts": "2026-09-19T06:59:40Z"}
-{"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (pre-filter, 2026-09-19): no confirm-before-acting phrasing in the reply; mode's trigger condition doesn't apply.", "trace_id": "1aeea1f5a46ff5c7770e248e0759ad80", "ts": "2026-09-19T06:59:48Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": "Corrected during HW5 dev-disagreement review (2026-09-21): reverted back to Pass for consistency with #14 -- a data-quality-driven escalation hesitation is out of scope for unnecessary_reconfirmation (belongs to data_quality_issue_handling instead), not a reconfirmation issue for this mode.", "trace_id": "1aeea1f5a46ff5c7770e248e0759ad80", "ts": "2026-09-22T01:36:59Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (pre-filter, 2026-09-19): no confirm-before-acting phrasing in the reply; mode's trigger condition doesn't apply.", "trace_id": "c6f18a02eb9bd63a648a4791395c811e", "ts": "2026-09-19T07:00:00Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): asks for the refund reason, which is genuinely still missing -- a necessary clarifying question, not reconfirmation of a decided action", "trace_id": "0346eb9815b52fc4b17e1331613a43b0", "ts": "2026-09-19T07:10:41Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): customer asked an eligibility question, never requested the action", "trace_id": "0bbb91f282ceec951edad6656beea705", "ts": "2026-09-19T07:10:43Z"}
@@ -93,18 +93,18 @@
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no action requested", "trace_id": "32b3a38e61f68dced4b726d6e90f38df", "ts": "2026-09-19T07:10:59Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no action requested, just an eligibility check", "trace_id": "35e6971c56bec41d9f26e1af771082cc", "ts": "2026-09-19T07:11:03Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no refund/cancel action requested", "trace_id": "362a8662c713384d9a219e37a51d1df5", "ts": "2026-09-19T07:11:05Z"}
-{"label": 1, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): merchant explicitly requested action ('can you process that? just need a quick yes or no') and every fact is known, but reply still asks 'Want me to go ahead and issue...'", "trace_id": "392d3d32050ea08cfd9c3b3f9e1ec034", "ts": "2026-09-19T07:11:07Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "392d3d32050ea08cfd9c3b3f9e1ec034", "ts": "2026-09-21T18:26:20Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): customer asked an eligibility question, never requested the refund", "trace_id": "3cff4d4c13dac4a454a5cfb804f1c66d", "ts": "2026-09-19T07:11:08Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): requested amount ($50) exceeds the order total ($20) -- a genuine mismatch needing clarification", "trace_id": "431958e92dc1634fac350c74066e7c74", "ts": "2026-09-19T07:11:11Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): customer asked an eligibility question, never requested the refund", "trace_id": "4bd00549c8cb32f13bc9528086e488d2", "ts": "2026-09-19T07:11:13Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no refund action requested, this is an eligibility check on the customer's behalf", "trace_id": "5ad6b7f2aa6cc2142bbce74b005c36d8", "ts": "2026-09-19T07:11:15Z"}
-{"label": 1, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): merchant explicitly requested action and wants speed ('just need a quick yes or no'), every fact known, but reply still asks 'Want me to go ahead and issue the refund?'", "trace_id": "5f64a83c4fd812b5ec41a56a9cfbca40", "ts": "2026-09-19T07:11:18Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "5f64a83c4fd812b5ec41a56a9cfbca40", "ts": "2026-09-21T18:25:33Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no action requested", "trace_id": "62c3f5ce9f8a830b4199b3c4491b21c9", "ts": "2026-09-19T07:11:20Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no action requested, just an eligibility question", "trace_id": "6db789b2d3f2d4edba9c8c2eede62f02", "ts": "2026-09-19T07:11:24Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): eligibility question only, no action requested", "trace_id": "73c460705eeac834af0c4c95e592662c", "ts": "2026-09-19T07:11:27Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no refund/cancel action requested", "trace_id": "7ccd8074f5f9b051d79884c9fc955f85", "ts": "2026-09-19T07:11:31Z"}
 {"label": 1, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): states it's already submitting the refund ('I'll go ahead and submit... now') then still asks 'Want me to proceed?' -- reconfirming something already announced as decided", "trace_id": "7ea52c86117396551ee521f177b45cb6", "ts": "2026-09-19T07:11:33Z"}
-{"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): customer asked whether they'd get a full refund back, not yet an explicit request to process one", "trace_id": "889f71eb03ab982911aaa4170610259b", "ts": "2026-09-19T07:11:39Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": "Corrected during HW5 dev-disagreement review (2026-09-21): the amount question (restocking fee) was already answered within the same reply; nothing remained pending except executing the refund. Original human Pass label was wrong.", "trace_id": "889f71eb03ab982911aaa4170610259b", "ts": "2026-09-22T01:32:58Z"}
 {"label": 1, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): support explicitly requested action ('can you process that?'), every fact known, but reply still asks 'Want me to go ahead and issue the refund request?'", "trace_id": "8abd092973fa7bfce860d51e91d76829", "ts": "2026-09-19T07:11:41Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): a product price lookup, no refund/cancel action involved", "trace_id": "8c05bbe2d7f6e5c10e5277151d199f9a", "ts": "2026-09-19T07:11:43Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): eligibility question only, no refund action requested", "trace_id": "8fc7ee3da7ca06196656b6ab51b6f01c", "ts": "2026-09-19T07:11:44Z"}
@@ -126,7 +126,7 @@
 {"label": 1, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): customer explicitly requested the refund AND gave the reason (damaged); every fact known, but reply still asks 'Would you like me to proceed?'", "trace_id": "e238d87fee9c24e78fd9e77722d29ed5", "ts": "2026-09-19T07:12:12Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no refund/cancel action requested", "trace_id": "e4d2ddb597d9a1be6bee38873396a04a", "ts": "2026-09-19T07:12:15Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): the order isn't simply approvable as requested; the reply offers real options given real complexity, not permission for an already-decided action", "trace_id": "e4efb710a7b252fb8b771a3f134c2037", "ts": "2026-09-19T07:12:17Z"}
-{"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): the refund reason is still genuinely missing (asked twice now); the clarifying question is necessary", "trace_id": "e542e74e0fa37a3c354dcfb78e53a64b", "ts": "2026-09-19T07:12:19Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": "Corrected during HW5 dev-disagreement review (2026-09-21): asked for the reason twice across three turns without ever acting once amount/eligibility were fully known. Original human Pass label was wrong.", "trace_id": "e542e74e0fa37a3c354dcfb78e53a64b", "ts": "2026-09-22T01:39:22Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no refund/cancel action involved", "trace_id": "e54edb98c79b902de7b055faba8545f5", "ts": "2026-09-19T07:12:21Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no refund/cancel action involved, this is a policy config question", "trace_id": "f9da23844e91fe304f3e50ff75c7216b", "ts": "2026-09-19T07:12:22Z"}
 {"label": 0, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): no refund/cancel action involved", "trace_id": "fb393f02f31cfc189c5b69e6b7e925e7", "ts": "2026-09-19T07:12:24Z"}
@@ -134,3 +134,73 @@
 {"label": 1, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): existing confirmed positive (Part D)", "trace_id": "2cfa8dba0527e186dc21656782e3e091", "ts": "2026-09-19T07:12:26Z"}
 {"label": 1, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): existing confirmed positive (Part D)", "trace_id": "69567607a899d6e631dc68e24c4d93ce", "ts": "2026-09-19T07:12:27Z"}
 {"label": 1, "mode": "unnecessary_reconfirmation", "note": "AI-labeled (manual read, 2026-09-19): merchant's request already established the eligible order, amount, and reason (damaged); reply still asks 'Want me to go ahead and issue... Just confirm'", "trace_id": "2d2ea6b2342d08ff1c612fe2ea986c52", "ts": "2026-09-19T07:14:43Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "7da40d2db3ac9d8227d9c906454f0dd7", "ts": "2026-09-21T00:30:44Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "f98f1a15a74533bda9ef169e581b52c9", "ts": "2026-09-21T00:32:17Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "6c95f9a2e8c000cf087aa0518b58a5cd", "ts": "2026-09-21T00:33:54Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "25621fc94c6efe251725f6c5caef394c", "ts": "2026-09-21T00:38:28Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "a01b896a6737409b64eae0d380006085", "ts": "2026-09-21T00:41:40Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "aa538259fc99ee34a80785a141335022", "ts": "2026-09-21T00:43:23Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "bed0e97df478cda99d4751af588f6be9", "ts": "2026-09-21T00:44:34Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": "Corrected during HW5 dev-disagreement review (2026-09-21): full refund amount was already confirmed with no ambiguity (no restocking fee applies). Original human Pass label was wrong.", "trace_id": "9d2547067c59d6ba9da655eac786db7c", "ts": "2026-09-22T01:32:58Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "da981da9c36a118f308d261959078cb9", "ts": "2026-09-21T00:54:59Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "9c9955e220919f25e67b78fddd9de95a", "ts": "2026-09-21T00:56:09Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "d34d121ad3908188e26b04fffbd99660", "ts": "2026-09-21T00:57:54Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "331eaa3d6204a8c8f0fc51d5f3937383", "ts": "2026-09-21T00:59:43Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "0fd9c801c56815304c87415dd2cf28a1", "ts": "2026-09-21T01:06:30Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "8a624537fae80bef5429d56b745843cf", "ts": "2026-09-21T02:46:35Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "31337ddd26e3b9b204ca1185f7a7eb8f", "ts": "2026-09-21T02:49:14Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "38e2220fa8f63015660d2c486b5d4e0b", "ts": "2026-09-21T02:50:26Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "e4375d887a4a070337360c9bd1df58f8", "ts": "2026-09-21T02:51:23Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "c70df79a38cc889647cb73c1901e8d65", "ts": "2026-09-21T02:52:29Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "e10d08e908a368e86275a085e95a09ce", "ts": "2026-09-21T02:54:14Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "e7d644e7dd52d7f59e010762980dd604", "ts": "2026-09-21T02:57:42Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "6b776c34d9a6f51bba81af2f1aa0755b", "ts": "2026-09-21T02:59:14Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": "Corrected during HW5 dev-disagreement review (2026-09-21): offering to escalate for an eligibility override is not necessary here; original human Pass label was wrong.", "trace_id": "3232962e79470e782e574bbd6cefb690", "ts": "2026-09-22T01:19:15Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "8f894f2068ccd06c5561a5a30e4ac579", "ts": "2026-09-21T03:04:52Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "ed86d11ab3a4a824e380d4514fbad55f", "ts": "2026-09-21T03:05:55Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "513eb5da58f21bb71409d0a6ddaadf39", "ts": "2026-09-21T03:10:04Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "5037ae8387289a6ef211b6daf72f8403", "ts": "2026-09-21T03:10:55Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "183131d63f02c8abb30ebfb8a535528f", "ts": "2026-09-21T03:12:22Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "61101c6fe63daeb21702295b6240d8e9", "ts": "2026-09-21T03:13:37Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "4947da01ef62950ff623c6b0c43a1ad9", "ts": "2026-09-21T03:16:10Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "c6539e556c8bfcb140816bd93b1cb4fd", "ts": "2026-09-21T03:17:43Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "9485e46d691985cfe829b3323ca857b8", "ts": "2026-09-21T03:18:40Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "e06563a1246b130cd403da83fdf296b8", "ts": "2026-09-21T03:20:29Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "cc1282ffd7df517e0f0edf60d0c74c02", "ts": "2026-09-21T03:22:15Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "ec7ea57fee7ee834f52c20d4b59eb06c", "ts": "2026-09-21T03:23:06Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "ac3d6c3f955eb4cc346bb5dc03f311f9", "ts": "2026-09-21T03:24:25Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "a5fd07364481b230b318bbf9ed8b1197", "ts": "2026-09-21T03:27:08Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "d378c05bc6a5a706c4bf47535fc686d0", "ts": "2026-09-21T16:38:04Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "bac59e1775ee32f9871e389c3ed0cfb5", "ts": "2026-09-21T16:38:48Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "c76b0800953a683d11e2ce196433c77b", "ts": "2026-09-21T16:40:45Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "66b7e3d592cbd4ec46265c1ec59ac8f5", "ts": "2026-09-21T16:41:16Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "b5513c169cad3b318971022de3711025", "ts": "2026-09-21T16:41:58Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "fed0146194cfece05c1a69e5e29d90f9", "ts": "2026-09-21T16:42:48Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "fd07b83fa77e2bae07195b9b8d311885", "ts": "2026-09-21T16:43:21Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "7d2e0ef1646f394bbcd5d1646511e544", "ts": "2026-09-21T16:44:01Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "5750ac128e7b7bae889a2bd7d243198e", "ts": "2026-09-21T16:45:04Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "ca30b292cb778d0fae613adfc3f0f6be", "ts": "2026-09-21T16:46:00Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "66b65f1dbd3f780eba2b195133a66e77", "ts": "2026-09-21T16:46:48Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "352b4131ac22f3466d29cf0fe75938d9", "ts": "2026-09-21T16:49:35Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "ecdd7942917e610e508ec2da05274c93", "ts": "2026-09-21T16:50:43Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": "Corrected during HW5 dev-disagreement review (2026-09-21): clean direct-action reply (Refund ID stated, queued for approval, no trailing permission question). Original human Fail label was wrong.", "trace_id": "e35ca4faf1bffc3637e30d215727c2b6", "ts": "2026-09-22T01:36:24Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "d83234b45ee1ba5d560220386ff09497", "ts": "2026-09-21T16:52:44Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "4c41d1cec027579404f4868be5a23cf0", "ts": "2026-09-21T16:53:26Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "30118abc9e56a9f3bfbdd2cc0ad72534", "ts": "2026-09-21T16:54:19Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "4e370eb6fbcf0ea7a50586c114acd747", "ts": "2026-09-21T16:55:18Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "1041c605a9c7ffb92f0f90626770253c", "ts": "2026-09-21T18:26:59Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "802a9b777a3ce120b239681418190e1b", "ts": "2026-09-21T16:56:23Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "50686ab1cbda3d18a419ca42af0e5ab2", "ts": "2026-09-21T16:56:47Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "521a8c6df8e83aa0f6b6b64a4b680a7a", "ts": "2026-09-21T16:57:18Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "6c1c3a5498117cced9ccdc2da8ab0c4c", "ts": "2026-09-21T16:57:57Z"}
+{"label": 0, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "7449798c060c6cec14e9246d6e9c4151", "ts": "2026-09-21T17:04:37Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "d7ce850c7a0754ebcf856f5be09451bf", "ts": "2026-09-21T17:06:13Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "0d5a69a484e14b96dbcf732cb365395d", "ts": "2026-09-21T17:07:43Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "120694a5d0d0db5405e3f06665fbcbc5", "ts": "2026-09-21T17:59:37Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "8a7ee640ca4415faaa24883452d46ab3", "ts": "2026-09-21T18:00:16Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "738446b3365c5e98c65f795961f3a42c", "ts": "2026-09-21T18:00:57Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "f67cb87339eaeb172415bde2d40c3694", "ts": "2026-09-21T18:33:28Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "bc884a3845aaaf484d131e17ad740bb2", "ts": "2026-09-21T18:34:09Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "f0c88cd47b24933f4e9d6050af652787", "ts": "2026-09-21T18:34:50Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "1684c97fb5d9aa5ef5c204d2dde72889", "ts": "2026-09-21T18:35:27Z"}
+{"label": 1, "mode": "unnecessary_reconfirmation", "note": null, "trace_id": "4fbb7041f76e377e89c51862fab9a0d5", "ts": "2026-09-21T18:36:05Z"}

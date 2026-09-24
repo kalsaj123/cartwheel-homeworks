@@ -623,5 +623,475 @@
     "scenario_id": "pilot-0035",
     "reason": "structural search for store_policy_misattribution (merchant's own store_id is 7 (store-northwind-books-policy), but reply used store-saltbox-pantry-policy)",
     "batch": "partD_structural_search"
+  },
+  {
+    "scenario_id": "support-0046",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0049",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0149",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0240",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0145",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0215::run2",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0153",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0017",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0232::run2",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0035",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0005",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0136",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0226::run2",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0240::run2",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0241::run2",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0075",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0015",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0225::run2",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0032",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0146",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0127",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0036",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0014",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0218::run2",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0141",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0139",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0129",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0130",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0116",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0031",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0034",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0090",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0228::run2",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0110",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0155",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0069",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "support-0120",
+    "reason": "manually added for review",
+    "batch": "manual"
+  },
+  {
+    "scenario_id": "hw5-urc-001",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-003",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-004",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-005",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-006",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-007",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-008",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-009",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-010",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-011",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-012",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-013",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-014",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-015",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-016",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-017",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-018",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-019",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc-020",
+    "reason": "HW5 synthetic scenario (direct-phrasing batch, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v1"
+  },
+  {
+    "scenario_id": "hw5-urc2-001",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-002",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-003",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-004",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-005",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-006",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-007",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-008",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-009",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-010",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-011",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-012",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-013",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-014",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-015",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-016",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-017",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-018",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-019",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-020",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-021",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-022",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-023",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc2-024",
+    "reason": "HW5 synthetic scenario (proven can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v2"
+  },
+  {
+    "scenario_id": "hw5-urc3-001",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v3"
+  },
+  {
+    "scenario_id": "hw5-urc3-002",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v3"
+  },
+  {
+    "scenario_id": "hw5-urc3-003",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v3"
+  },
+  {
+    "scenario_id": "hw5-urc3-004",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v3"
+  },
+  {
+    "scenario_id": "hw5-urc3-005",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v3"
+  },
+  {
+    "scenario_id": "hw5-urc3-006",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v3"
+  },
+  {
+    "scenario_id": "hw5-urc3-007",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v3"
+  },
+  {
+    "scenario_id": "hw5-urc3-008",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v3"
+  },
+  {
+    "scenario_id": "hw5-urc4-001",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v4"
+  },
+  {
+    "scenario_id": "hw5-urc4-002",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v4"
+  },
+  {
+    "scenario_id": "hw5-urc4-003",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v4"
+  },
+  {
+    "scenario_id": "hw5-urc4-004",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v4"
+  },
+  {
+    "scenario_id": "hw5-urc4-005",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v4"
+  },
+  {
+    "scenario_id": "hw5-urc4-006",
+    "reason": "HW5 synthetic scenario (clean can-you-process-that template, unnecessary_reconfirmation)",
+    "batch": "hw5_synth_v4"
   }
 ]

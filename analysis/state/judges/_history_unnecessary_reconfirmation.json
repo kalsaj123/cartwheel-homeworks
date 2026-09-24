@@ -1,0 +1,20 @@
+{
+  "versions": [
+    {
+      "judge_id": "unnecessary_reconfirmation-v0",
+      "prompt_hash": "65de24fdc695"
+    },
+    {
+      "judge_id": "unnecessary_reconfirmation-v1",
+      "prompt_hash": "65de24fdc695"
+    },
+    {
+      "judge_id": "unnecessary_reconfirmation-v2",
+      "prompt_hash": "c2326024ba04"
+    },
+    {
+      "judge_id": "unnecessary_reconfirmation-v3",
+      "prompt_hash": "b2ab7430f8f5"
+    }
+  ]
+}
