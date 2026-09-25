@@ -1,0 +1,18 @@
+{
+  "case_id": "e-002",
+  "first_run": {
+    "url": "https://github.com/kalsaj123/cartwheel-homeworks/actions/runs/36172399152",
+    "passed": 0,
+    "trials": 5,
+    "decision": "block",
+    "note": "Intentional regression: added a system-prompt rule requiring confirmation before every refund/cancellation."
+  },
+  "second_run": {
+    "url": "https://github.com/kalsaj123/cartwheel-homeworks/actions/runs/36174391581",
+    "passed": 2,
+    "trials": 5,
+    "decision": "block",
+    "note": "Prompt fully reverted to the original (byte-identical diff), but e-002 still failed 2 of 5 trials, down from 5/5 in the original baseline."
+  },
+  "explanation": "The revert restored the exact original system prompt, but the second CI run still blocked because e-002 passed only 2 of 5 trials instead of 5 of 5. This is not an infrastructure error -- all 5 trials completed and produced a reward. Per the handout, this is kept as genuine evidence rather than rerun. It demonstrates that a regression case's original 5/5 baseline reflects one sample of a nondeterministic agent, not a permanent guarantee: the same prompt can produce a different reliability result on a fresh set of 5 runs."
+}
