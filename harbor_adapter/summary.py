@@ -17,6 +17,32 @@ def _case_id(task_name: str, known_ids: set[str]) -> str | None:
     return max(matches, key=len) if matches else None
 
 
+def _load_trial_results(job_dir: Path, result: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return each trial's result dict.
+
+    harbor==0.23.0 writes the aggregate job result.json without a
+    top-level "trial_results" list; each trial's own task_name and
+    verifier_result live in that trial's subdirectory (job_dir/<trial
+    name>/result.json) instead. Prefer an embedded "trial_results" list
+    when present (older Harbor layout, and what the test fixtures use),
+    and fall back to scanning trial subdirectories otherwise.
+    """
+    embedded = result.get("trial_results")
+    if embedded:
+        return list(embedded)
+    trials: list[dict[str, Any]] = []
+    for child in sorted(job_dir.iterdir()):
+        if not child.is_dir():
+            continue
+        trial_result_path = child / "result.json"
+        if not trial_result_path.exists():
+            continue
+        trial = json.loads(trial_result_path.read_text())
+        if "task_name" in trial:
+            trials.append(trial)
+    return trials
+
+
 def _reward(trial: dict[str, Any]) -> float | None:
     verifier = trial.get("verifier_result")
     if not isinstance(verifier, dict):
@@ -49,7 +75,7 @@ def summarize_job(
     result = json.loads(result_path.read_text())
     trials: dict[str, list[dict[str, Any]]] = defaultdict(list)
     unknown: list[str] = []
-    for trial in result.get("trial_results", []):
+    for trial in _load_trial_results(job_dir, result):
         case_id = _case_id(str(trial.get("task_name", "")), set(by_id))
         if case_id is None:
             unknown.append(str(trial.get("task_name", "")))
