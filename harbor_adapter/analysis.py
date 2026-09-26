@@ -11,6 +11,36 @@ from tests.eval.passk import pass_at_k
 from harbor_adapter.summary import _reward
 
 
+def _load_ordered_trials(job_dir: Path, result: dict[str, Any]) -> tuple[list[dict[str, Any]], str]:
+    """Return every trial's result dict in run order, plus a label describing the order.
+
+    harbor==0.23.0 writes the aggregate job result.json without a
+    top-level "trial_results" list; each trial's own task_name and
+    verifier_result live in that trial's subdirectory (job_dir/<trial
+    name>/result.json) instead, with no guaranteed listing order. Prefer
+    an embedded "trial_results" list when present (older Harbor layout,
+    and what the test fixtures use, already in run order), and fall back
+    to scanning trial subdirectories sorted by each trial's own
+    "started_at" timestamp otherwise -- directory name order is random
+    and would not reflect when each trial actually ran.
+    """
+    embedded = result.get("trial_results")
+    if embedded:
+        return list(embedded), "result.json trial_results order"
+    trials: list[dict[str, Any]] = []
+    for child in job_dir.iterdir():
+        if not child.is_dir():
+            continue
+        trial_result_path = child / "result.json"
+        if not trial_result_path.exists():
+            continue
+        trial = json.loads(trial_result_path.read_text())
+        if "task_name" in trial:
+            trials.append(trial)
+    trials.sort(key=lambda trial: trial.get("started_at") or "")
+    return trials, "trial subdirectories sorted by started_at"
+
+
 def analyze_capability_job(
     job_dir: Path,
     case_id: str,
@@ -22,9 +52,10 @@ def analyze_capability_job(
     if not result_path.exists():
         raise FileNotFoundError(f"Harbor result not found: {result_path}")
     result = json.loads(result_path.read_text())
+    all_trials, trial_order = _load_ordered_trials(job_dir, result)
     trials = [
         trial
-        for trial in result.get("trial_results", [])
+        for trial in all_trials
         if str(trial.get("task_name", "")).endswith(case_id)
     ]
     if len(trials) != expected_attempts:
@@ -82,7 +113,7 @@ def analyze_capability_job(
     return {
         "case_id": case_id,
         "model": next(iter(models)),
-        "trial_order": "result.json trial_results order",
+        "trial_order": trial_order,
         "trials": trial_records,
         "rewards": rewards,
         "n": len(rewards),
